@@ -7,12 +7,20 @@
         <generator>Hugo -- gohugo.io</generator>
         <language>zh-cn</language>
         <copyright>shi1iu</copyright>
-        <lastBuildDate>Mon, 02 Feb 2026 00:00:00 +0000</lastBuildDate><atom:link href="https://shi1iu.github.io/categories/index.xml" rel="self" type="application/rss+xml" /><item>
+        <lastBuildDate>Wed, 04 Feb 2026 00:00:00 +0000</lastBuildDate><atom:link href="https://shi1iu.github.io/categories/index.xml" rel="self" type="application/rss+xml" /><item>
         <title>Linux</title>
         <link>https://shi1iu.github.io/categories/linux/</link>
-        <pubDate>Mon, 02 Feb 2026 00:00:00 +0000</pubDate>
+        <pubDate>Wed, 04 Feb 2026 00:00:00 +0000</pubDate>
         
         <guid>https://shi1iu.github.io/categories/linux/</guid>
+        <description></description>
+        </item>
+        <item>
+        <title>权限</title>
+        <link>https://shi1iu.github.io/categories/%E6%9D%83%E9%99%90/</link>
+        <pubDate>Wed, 04 Feb 2026 00:00:00 +0000</pubDate>
+        
+        <guid>https://shi1iu.github.io/categories/%E6%9D%83%E9%99%90/</guid>
         <description></description>
         </item>
         <item>

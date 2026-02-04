@@ -7,21 +7,324 @@
         <generator>Hugo -- gohugo.io</generator>
         <language>zh-cn</language>
         <copyright>shi1iu</copyright>
-        <lastBuildDate>Mon, 02 Feb 2026 00:00:00 +0000</lastBuildDate><atom:link href="https://shi1iu.github.io/categories/linux/index.xml" rel="self" type="application/rss+xml" /><item>
+        <lastBuildDate>Wed, 04 Feb 2026 00:00:00 +0000</lastBuildDate><atom:link href="https://shi1iu.github.io/categories/linux/index.xml" rel="self" type="application/rss+xml" /><item>
+        <title>Linux下open()和文件权限问题</title>
+        <link>https://shi1iu.github.io/p/linux%E4%B8%8Bopen%E5%92%8C%E6%96%87%E4%BB%B6%E6%9D%83%E9%99%90%E9%97%AE%E9%A2%98/</link>
+        <pubDate>Wed, 04 Feb 2026 00:00:00 +0000</pubDate>
+        
+        <guid>https://shi1iu.github.io/p/linux%E4%B8%8Bopen%E5%92%8C%E6%96%87%E4%BB%B6%E6%9D%83%E9%99%90%E9%97%AE%E9%A2%98/</guid>
+        <description>&lt;img src="https://shi1iu.github.io/p/linux%E4%B8%8Bopen%E5%92%8C%E6%96%87%E4%BB%B6%E6%9D%83%E9%99%90%E9%97%AE%E9%A2%98/picture.jpg" alt="Featured image of post Linux下open()和文件权限问题" /&gt;&lt;h2 id=&#34;linux下系统调用open的参数含义&#34;&gt;Linux下系统调用open()的参数含义
+&lt;/h2&gt;&lt;h3 id=&#34;open函数原型&#34;&gt;open函数原型
+&lt;/h3&gt;&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;2
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;3
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;4
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;5
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;6
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-c&#34; data-lang=&#34;c&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;cp&#34;&gt;#include&lt;/span&gt; &lt;span class=&#34;cpf&#34;&gt;&amp;lt;sys/types.h&amp;gt;&lt;/span&gt;&lt;span class=&#34;cp&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;cp&#34;&gt;#include&lt;/span&gt; &lt;span class=&#34;cpf&#34;&gt;&amp;lt;sys/stat.h&amp;gt;&lt;/span&gt;&lt;span class=&#34;cp&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;cp&#34;&gt;#include&lt;/span&gt; &lt;span class=&#34;cpf&#34;&gt;&amp;lt;fcntl.h&amp;gt;&lt;/span&gt;&lt;span class=&#34;cp&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;cp&#34;&gt;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;kt&#34;&gt;int&lt;/span&gt; &lt;span class=&#34;nf&#34;&gt;open&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;k&#34;&gt;const&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;char&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;*&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;pathname&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;int&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;flags&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;);&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;kt&#34;&gt;int&lt;/span&gt; &lt;span class=&#34;nf&#34;&gt;open&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;k&#34;&gt;const&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;char&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;*&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;pathname&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;int&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;flags&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;mode_t&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;mode&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;);&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;p&gt;&lt;strong&gt;pathname参数&lt;/strong&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;要打开的文件路径&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;strong&gt;flags参数&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;这些标志使用位或运算 &lt;code&gt;|&lt;/code&gt; 组合：&lt;/p&gt;
+&lt;p&gt;必需标志（三选一）：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;O_RDONLY&lt;/code&gt; - 只读&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;O_WRONLY&lt;/code&gt; - 只写&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;O_RDWR&lt;/code&gt; - 读写&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;可选标志：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;O_CREAT&lt;/code&gt; - 文件不存在时创建&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;O_EXCL&lt;/code&gt; - 与 &lt;code&gt;O_CREAT&lt;/code&gt; 配合使用，确保文件是新建的（原子操作）&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;O_TRUNC&lt;/code&gt; - 打开时清空文件内容&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;O_APPEND&lt;/code&gt; - 追加模式&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;O_NONBLOCK&lt;/code&gt; - 非阻塞模式&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;O_SYNC&lt;/code&gt; - 同步写入（等待物理写入完成）&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;O_CLOEXEC&lt;/code&gt; - 执行exec时关闭文件描述符（FD_CLOEXEC）&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;strong&gt;mode参数&lt;/strong&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;仅当使用 &lt;code&gt;O_CREAT&lt;/code&gt; 时才需要&lt;/li&gt;
+&lt;li&gt;指定新文件的权限（八进制）&lt;/li&gt;
+&lt;li&gt;示例：&lt;code&gt;0644&lt;/code&gt;（用户rw，组r，其他r）&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 id=&#34;区分open和fopen&#34;&gt;区分open()和fopen()
+&lt;/h3&gt;&lt;table&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th&gt;类型&lt;/th&gt;
+&lt;th&gt;简介&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td&gt;open()&lt;/td&gt;
+&lt;td&gt;Unix下系统调用函数，操作成功返回的是文件描述符，操作失败返回的是-1&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;fopen()&lt;/td&gt;
+&lt;td&gt;ANSIC标准中C语言库函数，在不同的系统中调用不同的内核的API，返回的是一个指向文件结构的指针&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;p&gt;区别：open含义没有缓存，fopen函数有缓存。&lt;/p&gt;
+&lt;p&gt;拓展补充fopen() 函数&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;fopen函数原型&lt;/strong&gt;&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;2
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-c&#34; data-lang=&#34;c&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;cp&#34;&gt;#include&lt;/span&gt; &lt;span class=&#34;cpf&#34;&gt;&amp;lt;stdio.h&amp;gt;&lt;/span&gt;&lt;span class=&#34;cp&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;cp&#34;&gt;&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;FILE&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;*&lt;/span&gt;&lt;span class=&#34;nf&#34;&gt;fopen&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;k&#34;&gt;const&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;char&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;*&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;pathname&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;k&#34;&gt;const&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;char&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;*&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;mode&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;);&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;p&gt;&lt;strong&gt;pathname参数&lt;/strong&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;文件路径字符串&lt;/li&gt;
+&lt;li&gt;可以是相对路径或绝对路径&lt;/li&gt;
+&lt;li&gt;示例：&lt;code&gt;&amp;quot;data.txt&amp;quot;&lt;/code&gt;, &lt;code&gt;&amp;quot;/home/user/file.bin&amp;quot;&lt;/code&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;strong&gt;mode参数&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;由以下字符组合而成：&lt;/p&gt;
+&lt;p&gt;基础模式字符：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;&amp;quot;r&amp;quot;&lt;/code&gt;  - &lt;strong&gt;只读&lt;/strong&gt;打开文本文件（文件必须存在）&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;&amp;quot;w&amp;quot;&lt;/code&gt;  - &lt;strong&gt;只写&lt;/strong&gt;打开文本文件（文件存在则清空，不存在则创建）&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;&amp;quot;a&amp;quot;&lt;/code&gt;  - &lt;strong&gt;追加&lt;/strong&gt;打开文本文件（文件不存在则创建，写入位置在文件末尾）&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;&amp;quot;r+&amp;quot;&lt;/code&gt; - &lt;strong&gt;读写&lt;/strong&gt;打开文本文件（文件必须存在）&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;&amp;quot;w+&amp;quot;&lt;/code&gt; - &lt;strong&gt;读写&lt;/strong&gt;打开文本文件（文件存在则清空，不存在则创建）&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;&amp;quot;a+&amp;quot;&lt;/code&gt; - &lt;strong&gt;读写&lt;/strong&gt;打开文本文件（读取从开头，写入在末尾）&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;二进制模式修饰符（加在基础模式后）：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;&amp;quot;b&amp;quot;&lt;/code&gt; - 二进制模式（Windows上重要，Linux上可省略但建议使用）
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;&amp;quot;rb&amp;quot;&lt;/code&gt;, &lt;code&gt;&amp;quot;wb&amp;quot;&lt;/code&gt;, &lt;code&gt;&amp;quot;ab&amp;quot;&lt;/code&gt;, &lt;code&gt;&amp;quot;r+b&amp;quot;&lt;/code&gt;, &lt;code&gt;&amp;quot;w+b&amp;quot;&lt;/code&gt;, &lt;code&gt;&amp;quot;a+b&amp;quot;&lt;/code&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;C11新增模式：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;&amp;quot;x&amp;quot;&lt;/code&gt; - 独占创建模式（类似 &lt;code&gt;O_EXCL&lt;/code&gt;）
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;&amp;quot;wx&amp;quot;&lt;/code&gt;, &lt;code&gt;&amp;quot;w+x&amp;quot;&lt;/code&gt;, &lt;code&gt;&amp;quot;wbx&amp;quot;&lt;/code&gt; - 如果文件存在则失败&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2 id=&#34;linux下文件访问权限格式&#34;&gt;Linux下文件访问权限格式
+&lt;/h2&gt;&lt;h3 id=&#34;文件格式&#34;&gt;文件格式
+&lt;/h3&gt;&lt;p&gt;&lt;strong&gt;八进制表示法&lt;/strong&gt;&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;2
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;3
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;4
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;5
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;6
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-c&#34; data-lang=&#34;c&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;cp&#34;&gt;# 语法：u g o
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;cp&#34;&gt;# u: 所有者(user), g: 所属组(group), o: 其他人(other)
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;cp&#34;&gt;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;mo&#34;&gt;0644&lt;/span&gt;  &lt;span class=&#34;err&#34;&gt;#&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;rw&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;-&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;r&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;--&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;r&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;--&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;mo&#34;&gt;0755&lt;/span&gt;  &lt;span class=&#34;err&#34;&gt;#&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;rwxr&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;-&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;xr&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;-&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;x&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;mo&#34;&gt;0700&lt;/span&gt;  &lt;span class=&#34;err&#34;&gt;#&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;rwx&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;------&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;p&gt;前面的0表示八进制&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;权限位对应关系&lt;/strong&gt;&lt;/p&gt;
+&lt;table&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th style=&#34;text-align:left&#34;&gt;八进制&lt;/th&gt;
+&lt;th style=&#34;text-align:left&#34;&gt;二进制&lt;/th&gt;
+&lt;th style=&#34;text-align:left&#34;&gt;权限&lt;/th&gt;
+&lt;th style=&#34;text-align:left&#34;&gt;说明&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left&#34;&gt;0&lt;/td&gt;
+&lt;td style=&#34;text-align:left&#34;&gt;000&lt;/td&gt;
+&lt;td style=&#34;text-align:left&#34;&gt;&amp;mdash;&lt;/td&gt;
+&lt;td style=&#34;text-align:left&#34;&gt;无权限&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left&#34;&gt;1&lt;/td&gt;
+&lt;td style=&#34;text-align:left&#34;&gt;001&lt;/td&gt;
+&lt;td style=&#34;text-align:left&#34;&gt;&amp;ndash;x&lt;/td&gt;
+&lt;td style=&#34;text-align:left&#34;&gt;仅执行&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left&#34;&gt;2&lt;/td&gt;
+&lt;td style=&#34;text-align:left&#34;&gt;010&lt;/td&gt;
+&lt;td style=&#34;text-align:left&#34;&gt;-w-&lt;/td&gt;
+&lt;td style=&#34;text-align:left&#34;&gt;仅写入&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left&#34;&gt;3&lt;/td&gt;
+&lt;td style=&#34;text-align:left&#34;&gt;011&lt;/td&gt;
+&lt;td style=&#34;text-align:left&#34;&gt;-wx&lt;/td&gt;
+&lt;td style=&#34;text-align:left&#34;&gt;写入和执行&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left&#34;&gt;4&lt;/td&gt;
+&lt;td style=&#34;text-align:left&#34;&gt;100&lt;/td&gt;
+&lt;td style=&#34;text-align:left&#34;&gt;r&amp;ndash;&lt;/td&gt;
+&lt;td style=&#34;text-align:left&#34;&gt;仅读取&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left&#34;&gt;5&lt;/td&gt;
+&lt;td style=&#34;text-align:left&#34;&gt;101&lt;/td&gt;
+&lt;td style=&#34;text-align:left&#34;&gt;r-x&lt;/td&gt;
+&lt;td style=&#34;text-align:left&#34;&gt;读取和执行&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left&#34;&gt;6&lt;/td&gt;
+&lt;td style=&#34;text-align:left&#34;&gt;110&lt;/td&gt;
+&lt;td style=&#34;text-align:left&#34;&gt;rw-&lt;/td&gt;
+&lt;td style=&#34;text-align:left&#34;&gt;读取和写入&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left&#34;&gt;7&lt;/td&gt;
+&lt;td style=&#34;text-align:left&#34;&gt;111&lt;/td&gt;
+&lt;td style=&#34;text-align:left&#34;&gt;rwx&lt;/td&gt;
+&lt;td style=&#34;text-align:left&#34;&gt;所有权限&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;h3 id=&#34;权限修改在程序的实现&#34;&gt;权限修改在程序的实现
+&lt;/h3&gt;&lt;p&gt;&lt;strong&gt;直接修改&lt;/strong&gt;&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;2
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;3
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;4
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;5
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;6
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;7
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-c&#34; data-lang=&#34;c&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;cp&#34;&gt;#include&lt;/span&gt; &lt;span class=&#34;cpf&#34;&gt;&amp;lt;sys/stat.h&amp;gt;&lt;/span&gt;&lt;span class=&#34;cp&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;cp&#34;&gt;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;c1&#34;&gt;// 使用chmod()系统调用
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;c1&#34;&gt;&lt;/span&gt;&lt;span class=&#34;nf&#34;&gt;chmod&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;s&#34;&gt;&amp;#34;file.txt&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;mo&#34;&gt;0644&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;);&lt;/span&gt;      &lt;span class=&#34;c1&#34;&gt;// rw-r--r--
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;c1&#34;&gt;&lt;/span&gt;&lt;span class=&#34;nf&#34;&gt;chmod&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;s&#34;&gt;&amp;#34;script.sh&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;mo&#34;&gt;0755&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;);&lt;/span&gt;     &lt;span class=&#34;c1&#34;&gt;// rwxr-xr-x
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;c1&#34;&gt;&lt;/span&gt;&lt;span class=&#34;nf&#34;&gt;chmod&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;s&#34;&gt;&amp;#34;secret.txt&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;mo&#34;&gt;0600&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;);&lt;/span&gt;    &lt;span class=&#34;c1&#34;&gt;// rw-------
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;c1&#34;&gt;&lt;/span&gt;&lt;span class=&#34;nf&#34;&gt;chmod&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;s&#34;&gt;&amp;#34;program&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;mi&#34;&gt;4755&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;);&lt;/span&gt;       &lt;span class=&#34;c1&#34;&gt;// rwsr-xr-x (SetUID)
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;p&gt;&lt;strong&gt;umask掩码修改&lt;/strong&gt;&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt; 1
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 2
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 3
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 4
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 5
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 6
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 7
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 8
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 9
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;10
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;11
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-c&#34; data-lang=&#34;c&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;cp&#34;&gt;#include&lt;/span&gt; &lt;span class=&#34;cpf&#34;&gt;&amp;lt;sys/stat.h&amp;gt;&lt;/span&gt;&lt;span class=&#34;cp&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;cp&#34;&gt;#include&lt;/span&gt; &lt;span class=&#34;cpf&#34;&gt;&amp;lt;sys/types.h&amp;gt;&lt;/span&gt;&lt;span class=&#34;cp&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;cp&#34;&gt;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;kt&#34;&gt;int&lt;/span&gt; &lt;span class=&#34;nf&#34;&gt;main&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;()&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;{&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    &lt;span class=&#34;kt&#34;&gt;mode_t&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;old_mask&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;nf&#34;&gt;umask&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;mo&#34;&gt;0022&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;);&lt;/span&gt;  &lt;span class=&#34;c1&#34;&gt;// 设置umask并保存原值
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;c1&#34;&gt;&lt;/span&gt;    &lt;span class=&#34;c1&#34;&gt;// 创建文件，实际权限 = 0666 &amp;amp; ~022 = 0644
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;c1&#34;&gt;&lt;/span&gt;    &lt;span class=&#34;nf&#34;&gt;creat&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;s&#34;&gt;&amp;#34;file1.txt&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;mo&#34;&gt;0666&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;);&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    &lt;span class=&#34;c1&#34;&gt;// 恢复原umask
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;c1&#34;&gt;&lt;/span&gt;    &lt;span class=&#34;nf&#34;&gt;umask&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;old_mask&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;);&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    &lt;span class=&#34;k&#34;&gt;return&lt;/span&gt; &lt;span class=&#34;mi&#34;&gt;0&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;p&#34;&gt;}&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;p&gt;&lt;strong&gt;文件权限表&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;权限对文件的影响&lt;/strong&gt;&lt;/p&gt;
+&lt;table&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th style=&#34;text-align:left&#34;&gt;权限&lt;/th&gt;
+&lt;th style=&#34;text-align:left&#34;&gt;对文件的影响&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left&#34;&gt;&lt;strong&gt;r&lt;/strong&gt; (读)&lt;/td&gt;
+&lt;td style=&#34;text-align:left&#34;&gt;读取文件内容&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left&#34;&gt;&lt;strong&gt;w&lt;/strong&gt; (写)&lt;/td&gt;
+&lt;td style=&#34;text-align:left&#34;&gt;修改文件内容（需要目录写权限才能删除）&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left&#34;&gt;&lt;strong&gt;x&lt;/strong&gt; (执行)&lt;/td&gt;
+&lt;td style=&#34;text-align:left&#34;&gt;执行文件（脚本或二进制）&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;p&gt;&lt;strong&gt;权限对目录的影响&lt;/strong&gt;&lt;/p&gt;
+&lt;table&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th style=&#34;text-align:left&#34;&gt;权限&lt;/th&gt;
+&lt;th style=&#34;text-align:left&#34;&gt;对目录的影响&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left&#34;&gt;&lt;strong&gt;r&lt;/strong&gt; (读)&lt;/td&gt;
+&lt;td style=&#34;text-align:left&#34;&gt;列出目录内容（ls）&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left&#34;&gt;&lt;strong&gt;w&lt;/strong&gt; (写)&lt;/td&gt;
+&lt;td style=&#34;text-align:left&#34;&gt;在目录中创建/删除/重命名文件&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left&#34;&gt;&lt;strong&gt;x&lt;/strong&gt; (执行)&lt;/td&gt;
+&lt;td style=&#34;text-align:left&#34;&gt;进入目录（cd）或访问文件元数据&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;p&gt;&lt;strong&gt;后续遇到权限相关问题持续更新！&lt;/strong&gt;&lt;/p&gt;
+</description>
+        </item>
+        <item>
         <title>设备树</title>
         <link>https://shi1iu.github.io/p/%E8%AE%BE%E5%A4%87%E6%A0%91/</link>
         <pubDate>Mon, 02 Feb 2026 00:00:00 +0000</pubDate>
         
         <guid>https://shi1iu.github.io/p/%E8%AE%BE%E5%A4%87%E6%A0%91/</guid>
-        <description>&lt;img src="https://shi1iu.github.io/p/%E8%AE%BE%E5%A4%87%E6%A0%91/beijin.jpg" alt="Featured image of post 设备树" /&gt;&lt;h2 id=&#34;11设备树是什么&#34;&gt;1.1设备树是什么
+        <description>&lt;img src="https://shi1iu.github.io/p/%E8%AE%BE%E5%A4%87%E6%A0%91/beijin.jpg" alt="Featured image of post 设备树" /&gt;&lt;h2 id=&#34;设备树是什么&#34;&gt;设备树是什么
 &lt;/h2&gt;&lt;ol&gt;
 &lt;li&gt;device tree  设备树&lt;/li&gt;
 &lt;li&gt;dts device tree source 设备树源文件&lt;/li&gt;
 &lt;li&gt;dtc device tree compiler 设备树编译/反编译/调试工具&lt;/li&gt;
 &lt;li&gt;dtb device tree blob 设备树二进制文件&lt;/li&gt;
 &lt;/ol&gt;
-&lt;h2 id=&#34;12设备树如何工作&#34;&gt;1.2设备树如何工作
-&lt;/h2&gt;&lt;h3 id=&#34;121编译阶段&#34;&gt;1.2.1编译阶段
+&lt;h2 id=&#34;设备树如何工作&#34;&gt;设备树如何工作
+&lt;/h2&gt;&lt;h3 id=&#34;编译阶段&#34;&gt;编译阶段
 &lt;/h3&gt;&lt;p&gt;dtc :用于编译dts文件为dtb文件&lt;/p&gt;
 &lt;p&gt;dtb :用于kernel去使用设备树&lt;/p&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
@@ -40,7 +343,7 @@
 &lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;启动时加载到内存
 &lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 &lt;/div&gt;
-&lt;/div&gt;&lt;h3 id=&#34;122引导阶段&#34;&gt;1.2.2引导阶段
+&lt;/div&gt;&lt;h3 id=&#34;引导阶段&#34;&gt;引导阶段
 &lt;/h3&gt;&lt;p&gt;目的：加载到内存&lt;/p&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
 &lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
@@ -58,7 +361,7 @@
 &lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;// 4. 跳转到内核入口
 &lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 &lt;/div&gt;
-&lt;/div&gt;&lt;h3 id=&#34;123内核初始化阶段&#34;&gt;1.2.3内核初始化阶段
+&lt;/div&gt;&lt;h3 id=&#34;内核初始化阶段&#34;&gt;内核初始化阶段
 &lt;/h3&gt;&lt;p&gt;加载到内核完后，需要将设备树进行解析&lt;/p&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
 &lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
@@ -120,10 +423,10 @@
 &lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 &lt;/div&gt;
 &lt;/div&gt;&lt;p&gt;这样就得到了设备树数据，后续就需要驱动去匹配了。&lt;/p&gt;
-&lt;h2 id=&#34;13驱动匹配设备树&#34;&gt;1.3驱动匹配设备树
+&lt;h2 id=&#34;驱动匹配设备树&#34;&gt;驱动匹配设备树
 &lt;/h2&gt;&lt;p&gt;这里需要介绍几个核心的结构体：&lt;/p&gt;
-&lt;h3 id=&#34;131相关数据结构&#34;&gt;1.3.1相关数据结构
-&lt;/h3&gt;&lt;h4 id=&#34;1311设备树相关结构&#34;&gt;1.3.1.1设备树相关结构
+&lt;h3 id=&#34;相关数据结构&#34;&gt;相关数据结构
+&lt;/h3&gt;&lt;h4 id=&#34;设备树相关结构&#34;&gt;设备树相关结构
 &lt;/h4&gt;&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
 &lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
 &lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt; 1
@@ -176,7 +479,7 @@
 &lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;c1&#34;&gt;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;};&lt;/span&gt;
 &lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 &lt;/div&gt;
-&lt;/div&gt;&lt;h4 id=&#34;1312平台设备结构&#34;&gt;1.3.1.2平台设备结构
+&lt;/div&gt;&lt;h4 id=&#34;平台设备结构&#34;&gt;平台设备结构
 &lt;/h4&gt;&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
 &lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
 &lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt; 1
@@ -209,7 +512,7 @@
 &lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;p&#34;&gt;};&lt;/span&gt;
 &lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 &lt;/div&gt;
-&lt;/div&gt;&lt;h4 id=&#34;1313驱动匹配结构&#34;&gt;1.3.1.3驱动匹配结构
+&lt;/div&gt;&lt;h4 id=&#34;驱动匹配结构&#34;&gt;驱动匹配结构
 &lt;/h4&gt;&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
 &lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
 &lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt; 1
@@ -256,8 +559,8 @@
 &lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;p&#34;&gt;};&lt;/span&gt;
 &lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 &lt;/div&gt;
-&lt;/div&gt;&lt;h3 id=&#34;132驱动匹配过程&#34;&gt;1.3.2驱动匹配过程
-&lt;/h3&gt;&lt;h4 id=&#34;1321阶段一设备树节点转换为设备&#34;&gt;1.3.2.1阶段一：设备树节点转换为设备
+&lt;/div&gt;&lt;h3 id=&#34;驱动匹配过程&#34;&gt;驱动匹配过程
+&lt;/h3&gt;&lt;h4 id=&#34;阶段一设备树节点转换为设备&#34;&gt;阶段一：设备树节点转换为设备
 &lt;/h4&gt;&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
 &lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
 &lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt; 1
@@ -384,7 +687,7 @@
 &lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;p&#34;&gt;}&lt;/span&gt;
 &lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 &lt;/div&gt;
-&lt;/div&gt;&lt;h4 id=&#34;1322阶段二驱动注册&#34;&gt;1.3.2.2阶段二：驱动注册
+&lt;/div&gt;&lt;h4 id=&#34;阶段二驱动注册&#34;&gt;阶段二：驱动注册
 &lt;/h4&gt;&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
 &lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
 &lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt; 1
@@ -449,7 +752,7 @@
 &lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;nf&#34;&gt;module_init&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;my_driver_init&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;);&lt;/span&gt;
 &lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 &lt;/div&gt;
-&lt;/div&gt;&lt;h4 id=&#34;1323阶段三匹配执行过程&#34;&gt;1.3.2.3阶段三：匹配执行过程
+&lt;/div&gt;&lt;h4 id=&#34;阶段三匹配执行过程&#34;&gt;阶段三：匹配执行过程
 &lt;/h4&gt;&lt;p&gt;此处是内核在做的事情，具体不展开分析了。&lt;/p&gt;
 &lt;p&gt;&lt;strong&gt;后续持续更新！感谢观看！&lt;/strong&gt;&lt;/p&gt;
 </description>

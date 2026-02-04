@@ -1,0 +1,860 @@
+<!DOCTYPE html>
+<html lang="zh-cn" dir="ltr">
+    <head><meta charset='utf-8'>
+<meta name='viewport' content='width=device-width, initial-scale=1'><meta name='description' content="Linux下open()和fopen()的权限问题，以及文件权限的简单基础用法">
+<title>Linux下open()和文件权限问题</title>
+
+<link rel='canonical' href='https://shi1iu.github.io/p/linux%E4%B8%8Bopen%E5%92%8C%E6%96%87%E4%BB%B6%E6%9D%83%E9%99%90%E9%97%AE%E9%A2%98/'>
+
+<link rel="stylesheet" href="/scss/style.min.0304c6baf04e01a8fe70693791cb744d56a3578a3120a8796cefc66825aa39c7.css"><meta property='og:title' content="Linux下open()和文件权限问题">
+<meta property='og:description' content="Linux下open()和fopen()的权限问题，以及文件权限的简单基础用法">
+<meta property='og:url' content='https://shi1iu.github.io/p/linux%E4%B8%8Bopen%E5%92%8C%E6%96%87%E4%BB%B6%E6%9D%83%E9%99%90%E9%97%AE%E9%A2%98/'>
+<meta property='og:site_name' content='shi1iu'>
+<meta property='og:type' content='article'><meta property='article:section' content='Post' /><meta property='article:published_time' content='2026-02-04T00:00:00&#43;00:00'/><meta property='article:modified_time' content='2026-02-04T00:00:00&#43;00:00'/><meta property='og:image' content='https://shi1iu.github.io/p/linux%E4%B8%8Bopen%E5%92%8C%E6%96%87%E4%BB%B6%E6%9D%83%E9%99%90%E9%97%AE%E9%A2%98/picture.jpg' />
+<meta name="twitter:title" content="Linux下open()和文件权限问题">
+<meta name="twitter:description" content="Linux下open()和fopen()的权限问题，以及文件权限的简单基础用法"><meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:image" content='https://shi1iu.github.io/p/linux%E4%B8%8Bopen%E5%92%8C%E6%96%87%E4%BB%B6%E6%9D%83%E9%99%90%E9%97%AE%E9%A2%98/picture.jpg' />
+    <link rel="shortcut icon" href="/favicon.ico" />
+
+  
+
+
+    </head>
+    <body class="
+    article-page
+    ">
+    <script>
+        (function() {
+            const colorSchemeKey = 'StackColorScheme';
+            if(!localStorage.getItem(colorSchemeKey)){
+                localStorage.setItem(colorSchemeKey, "auto");
+            }
+        })();
+    </script><script>
+    (function() {
+        const colorSchemeKey = 'StackColorScheme';
+        const colorSchemeItem = localStorage.getItem(colorSchemeKey);
+        const supportDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches === true;
+
+        if (colorSchemeItem == 'dark' || colorSchemeItem === 'auto' && supportDarkMode) {
+            
+
+            document.documentElement.dataset.scheme = 'dark';
+        } else {
+            document.documentElement.dataset.scheme = 'light';
+        }
+    })();
+</script>
+<div class="container main-container flex on-phone--column extended"><aside class="sidebar left-sidebar sticky ">
+    <button class="hamburger hamburger--spin" type="button" id="toggle-menu" aria-label="切换菜单">
+        <span class="hamburger-box">
+            <span class="hamburger-inner"></span>
+        </span>
+    </button>
+
+    <header>
+        
+            
+            <figure class="site-avatar">
+                <a href="/">
+                
+                    
+                    
+                    
+                        
+                        <img src="/img/avatar_hu17971763332595127852.png" width="300"
+                            height="300" class="site-logo" loading="lazy" alt="Avatar">
+                    
+                
+                </a>
+                
+                    <span class="emoji">🍥</span>
+                
+            </figure>
+            
+        
+        
+        <div class="site-meta">
+            <h1 class="site-name"><a href="/">shi1iu</a></h1>
+            <h2 class="site-description">分享学习嵌入式Linux、MCU、RTOS、驱动开发、C/C&#43;&#43;等笔记与项目经验</h2>
+        </div>
+    </header><ol class="menu-social">
+            
+                <li>
+                    <a 
+                        href='https://github.com/shi1iu'
+                        target="_blank"
+                        title="GitHub"
+                        rel="me"
+                    >
+                        
+                        
+                            <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-brand-github" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+  <path d="M9 19c-4.3 1.4 -4.3 -2.5 -6 -3m12 5v-3.5c0 -1 .1 -1.4 -.5 -2c2.8 -.3 5.5 -1.4 5.5 -6a4.6 4.6 0 0 0 -1.3 -3.2a4.2 4.2 0 0 0 -.1 -3.2s-1.1 -.3 -3.5 1.3a12.3 12.3 0 0 0 -6.2 0c-2.4 -1.6 -3.5 -1.3 -3.5 -1.3a4.2 4.2 0 0 0 -.1 3.2a4.6 4.6 0 0 0 -1.3 3.2c0 4.6 2.7 5.7 5.5 6c-.6 .6 -.6 1.2 -.5 2v3.5" />
+</svg>
+
+
+
+                        
+                    </a>
+                </li>
+            
+                <li>
+                    <a 
+                        href='https://twitter.com'
+                        target="_blank"
+                        title="Twitter"
+                        rel="me"
+                    >
+                        
+                        
+                            <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-brand-twitter" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+  <path d="M22 4.01c-1 .49 -1.98 .689 -3 .99c-1.121 -1.265 -2.783 -1.335 -4.38 -.737s-2.643 2.06 -2.62 3.737v1c-3.245 .083 -6.135 -1.395 -8 -4c0 0 -4.182 7.433 4 11c-1.872 1.247 -3.739 2.088 -6 2c3.308 1.803 6.913 2.423 10.034 1.517c3.58 -1.04 6.522 -3.723 7.651 -7.742a13.84 13.84 0 0 0 .497 -3.753c-.002 -.249 1.51 -2.772 1.818 -4.013z" />
+</svg>
+
+
+
+                        
+                    </a>
+                </li>
+            
+        </ol><ol class="menu" id="main-menu">
+        
+        
+        
+        <li >
+            <a href='/' >
+                
+                
+                
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-home" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <polyline points="5 12 3 12 12 3 21 12 19 12" />
+  <path d="M5 12v7a2 2 0 0 0 2 2h10a2 2 0 0 0 2 -2v-7" />
+  <path d="M9 21v-6a2 2 0 0 1 2 -2h2a2 2 0 0 1 2 2v6" />
+</svg>
+
+
+
+                
+                <span>主页</span>
+            </a>
+        </li>
+        
+        
+        <li >
+            <a href='/%E5%85%B3%E4%BA%8E/' >
+                
+                
+                
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-user" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="12" cy="7" r="4" />
+  <path d="M6 21v-2a4 4 0 0 1 4 -4h4a4 4 0 0 1 4 4v2" />
+</svg>
+
+
+
+                
+                <span>关于</span>
+            </a>
+        </li>
+        
+        
+        <li >
+            <a href='/archives/' >
+                
+                
+                
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-archive" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <rect x="3" y="4" width="18" height="4" rx="2" />
+  <path d="M5 8v10a2 2 0 0 0 2 2h10a2 2 0 0 0 2 -2v-10" />
+  <line x1="10" y1="12" x2="14" y2="12" />
+</svg>
+
+
+
+                
+                <span>归档</span>
+            </a>
+        </li>
+        
+        
+        <li >
+            <a href='/search/' >
+                
+                
+                
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-search" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="10" cy="10" r="7" />
+  <line x1="21" y1="21" x2="15" y2="15" />
+</svg>
+
+
+
+                
+                <span>搜索</span>
+            </a>
+        </li>
+        
+        
+        <li >
+            <a href='/%E5%8F%8B%E6%83%85%E9%93%BE%E6%8E%A5/' >
+                
+                
+                
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-link" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <path d="M10 14a3.5 3.5 0 0 0 5 0l4 -4a3.5 3.5 0 0 0 -5 -5l-.5 .5" />
+  <path d="M14 10a3.5 3.5 0 0 0 -5 0l-4 4a3.5 3.5 0 0 0 5 5l.5 -.5" />
+</svg>
+
+
+
+                
+                <span>友情链接</span>
+            </a>
+        </li>
+        
+        <li class="menu-bottom-section">
+            <ol class="menu">
+                    
+                        <li id="i18n-switch">  
+                            <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-language" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+  <path d="M4 5h7" />
+  <path d="M9 3v2c0 4.418 -2.239 8 -5 8" />
+  <path d="M5 9c-.003 2.144 2.952 3.908 6.7 4" />
+  <path d="M12 20l4 -9l4 9" />
+  <path d="M19.1 18h-6.2" />
+</svg>
+
+
+
+                            <select name="language" title="language" onchange="window.location.href = this.selectedOptions[0].value">
+                                
+                                    <option value="https://shi1iu.github.io/" selected>简体中文</option>
+                                
+                                    <option value="https://shi1iu.github.io/en/" >English</option>
+                                
+                                    <option value="https://shi1iu.github.io/ar/" >عربي</option>
+                                
+                            </select>
+                        </li>
+                    
+                
+
+                
+                    <li id="dark-mode-toggle">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-toggle-left" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="8" cy="12" r="2" />
+  <rect x="2" y="6" width="20" height="12" rx="6" />
+</svg>
+
+
+
+                        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-toggle-right" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="16" cy="12" r="2" />
+  <rect x="2" y="6" width="20" height="12" rx="6" />
+</svg>
+
+
+
+                        <span>暗色模式</span>
+                    </li>
+                
+            </ol>
+        </li>
+    </ol>
+</aside>
+
+    <aside class="sidebar right-sidebar sticky">
+        
+            
+                
+    <section class="widget archives">
+        <div class="widget-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-hash" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <line x1="5" y1="9" x2="19" y2="9" />
+  <line x1="5" y1="15" x2="19" y2="15" />
+  <line x1="11" y1="4" x2="7" y2="20" />
+  <line x1="17" y1="4" x2="13" y2="20" />
+</svg>
+
+
+
+        </div>
+        <h2 class="widget-title section-title">目录</h2>
+        
+        <div class="widget--toc">
+            <nav id="TableOfContents">
+  <ol>
+    <li><a href="#linux下系统调用open的参数含义">Linux下系统调用open()的参数含义</a>
+      <ol>
+        <li><a href="#open函数原型">open函数原型</a></li>
+        <li><a href="#区分open和fopen">区分open()和fopen()</a></li>
+      </ol>
+    </li>
+    <li><a href="#linux下文件访问权限格式">Linux下文件访问权限格式</a>
+      <ol>
+        <li><a href="#文件格式">文件格式</a></li>
+        <li><a href="#权限修改在程序的实现">权限修改在程序的实现</a></li>
+      </ol>
+    </li>
+  </ol>
+</nav>
+        </div>
+    </section>
+
+            
+        
+    </aside>
+
+
+            <main class="main full-width">
+    <article class="has-image main-article">
+    <header class="article-header">
+        <div class="article-image">
+            <a href="/p/linux%E4%B8%8Bopen%E5%92%8C%E6%96%87%E4%BB%B6%E6%9D%83%E9%99%90%E9%97%AE%E9%A2%98/">
+                <img src="/p/linux%E4%B8%8Bopen%E5%92%8C%E6%96%87%E4%BB%B6%E6%9D%83%E9%99%90%E9%97%AE%E9%A2%98/picture_hu12447401539039787039.jpg"
+                        srcset="/p/linux%E4%B8%8Bopen%E5%92%8C%E6%96%87%E4%BB%B6%E6%9D%83%E9%99%90%E9%97%AE%E9%A2%98/picture_hu12447401539039787039.jpg 800w, /p/linux%E4%B8%8Bopen%E5%92%8C%E6%96%87%E4%BB%B6%E6%9D%83%E9%99%90%E9%97%AE%E9%A2%98/picture_hu9854269737059466322.jpg 1600w"
+                        width="800" 
+                        height="1067" 
+                        loading="lazy"
+                        alt="Featured image of post Linux下open()和文件权限问题" />
+                
+            </a>
+        </div>
+    
+
+    <div class="article-details">
+    
+    <header class="article-category">
+        
+            <a href="/categories/linux/" >
+                Linux
+            </a>
+        
+            <a href="/categories/%E6%9D%83%E9%99%90/" >
+                权限
+            </a>
+        
+    </header>
+    
+
+    <div class="article-title-wrapper">
+        <h2 class="article-title">
+            <a href="/p/linux%E4%B8%8Bopen%E5%92%8C%E6%96%87%E4%BB%B6%E6%9D%83%E9%99%90%E9%97%AE%E9%A2%98/">Linux下open()和文件权限问题</a>
+        </h2>
+    
+        
+        <h3 class="article-subtitle">
+            Linux下open()和fopen()的权限问题，以及文件权限的简单基础用法
+        </h3>
+        
+    </div>
+
+    
+    
+    
+    
+    <footer class="article-time">
+        
+            <div>
+                <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-calendar-time" width="56" height="56" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <path d="M11.795 21h-6.795a2 2 0 0 1 -2 -2v-12a2 2 0 0 1 2 -2h12a2 2 0 0 1 2 2v4" />
+  <circle cx="18" cy="18" r="4" />
+  <path d="M15 3v4" />
+  <path d="M7 3v4" />
+  <path d="M3 11h16" />
+  <path d="M18 16.496v1.504l1 1" />
+</svg>
+                <time class="article-time--published">2026-02-04</time>
+            </div>
+        
+
+        
+    </footer>
+    
+
+    
+</div>
+
+</header>
+
+    <section class="article-content">
+    
+    
+    <h2 id="linux下系统调用open的参数含义">Linux下系统调用open()的参数含义
+</h2><h3 id="open函数原型">open函数原型
+</h3><div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl"><span class="cp">#include</span> <span class="cpf">&lt;sys/types.h&gt;</span><span class="cp">
+</span></span></span><span class="line"><span class="cl"><span class="cp">#include</span> <span class="cpf">&lt;sys/stat.h&gt;</span><span class="cp">
+</span></span></span><span class="line"><span class="cl"><span class="cp">#include</span> <span class="cpf">&lt;fcntl.h&gt;</span><span class="cp">
+</span></span></span><span class="line"><span class="cl"><span class="cp"></span>
+</span></span><span class="line"><span class="cl"><span class="kt">int</span> <span class="nf">open</span><span class="p">(</span><span class="k">const</span> <span class="kt">char</span> <span class="o">*</span><span class="n">pathname</span><span class="p">,</span> <span class="kt">int</span> <span class="n">flags</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="kt">int</span> <span class="nf">open</span><span class="p">(</span><span class="k">const</span> <span class="kt">char</span> <span class="o">*</span><span class="n">pathname</span><span class="p">,</span> <span class="kt">int</span> <span class="n">flags</span><span class="p">,</span> <span class="kt">mode_t</span> <span class="n">mode</span><span class="p">);</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p><strong>pathname参数</strong></p>
+<ul>
+<li>要打开的文件路径</li>
+</ul>
+<p><strong>flags参数</strong></p>
+<p>这些标志使用位或运算 <code>|</code> 组合：</p>
+<p>必需标志（三选一）：</p>
+<ul>
+<li><code>O_RDONLY</code> - 只读</li>
+<li><code>O_WRONLY</code> - 只写</li>
+<li><code>O_RDWR</code> - 读写</li>
+</ul>
+<p>可选标志：</p>
+<ul>
+<li><code>O_CREAT</code> - 文件不存在时创建</li>
+<li><code>O_EXCL</code> - 与 <code>O_CREAT</code> 配合使用，确保文件是新建的（原子操作）</li>
+<li><code>O_TRUNC</code> - 打开时清空文件内容</li>
+<li><code>O_APPEND</code> - 追加模式</li>
+<li><code>O_NONBLOCK</code> - 非阻塞模式</li>
+<li><code>O_SYNC</code> - 同步写入（等待物理写入完成）</li>
+<li><code>O_CLOEXEC</code> - 执行exec时关闭文件描述符（FD_CLOEXEC）</li>
+</ul>
+<p><strong>mode参数</strong></p>
+<ul>
+<li>仅当使用 <code>O_CREAT</code> 时才需要</li>
+<li>指定新文件的权限（八进制）</li>
+<li>示例：<code>0644</code>（用户rw，组r，其他r）</li>
+</ul>
+<h3 id="区分open和fopen">区分open()和fopen()
+</h3><div class="table-wrapper"><table>
+<thead>
+<tr>
+<th>类型</th>
+<th>简介</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>open()</td>
+<td>Unix下系统调用函数，操作成功返回的是文件描述符，操作失败返回的是-1</td>
+</tr>
+<tr>
+<td>fopen()</td>
+<td>ANSIC标准中C语言库函数，在不同的系统中调用不同的内核的API，返回的是一个指向文件结构的指针</td>
+</tr>
+</tbody>
+</table></div>
+<p>区别：open含义没有缓存，fopen函数有缓存。</p>
+<p>拓展补充fopen() 函数</p>
+<p><strong>fopen函数原型</strong></p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl"><span class="cp">#include</span> <span class="cpf">&lt;stdio.h&gt;</span><span class="cp">
+</span></span></span><span class="line"><span class="cl"><span class="cp"></span><span class="n">FILE</span> <span class="o">*</span><span class="nf">fopen</span><span class="p">(</span><span class="k">const</span> <span class="kt">char</span> <span class="o">*</span><span class="n">pathname</span><span class="p">,</span> <span class="k">const</span> <span class="kt">char</span> <span class="o">*</span><span class="n">mode</span><span class="p">);</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p><strong>pathname参数</strong></p>
+<ul>
+<li>文件路径字符串</li>
+<li>可以是相对路径或绝对路径</li>
+<li>示例：<code>&quot;data.txt&quot;</code>, <code>&quot;/home/user/file.bin&quot;</code></li>
+</ul>
+<p><strong>mode参数</strong></p>
+<p>由以下字符组合而成：</p>
+<p>基础模式字符：</p>
+<ul>
+<li><code>&quot;r&quot;</code>  - <strong>只读</strong>打开文本文件（文件必须存在）</li>
+<li><code>&quot;w&quot;</code>  - <strong>只写</strong>打开文本文件（文件存在则清空，不存在则创建）</li>
+<li><code>&quot;a&quot;</code>  - <strong>追加</strong>打开文本文件（文件不存在则创建，写入位置在文件末尾）</li>
+<li><code>&quot;r+&quot;</code> - <strong>读写</strong>打开文本文件（文件必须存在）</li>
+<li><code>&quot;w+&quot;</code> - <strong>读写</strong>打开文本文件（文件存在则清空，不存在则创建）</li>
+<li><code>&quot;a+&quot;</code> - <strong>读写</strong>打开文本文件（读取从开头，写入在末尾）</li>
+</ul>
+<p>二进制模式修饰符（加在基础模式后）：</p>
+<ul>
+<li><code>&quot;b&quot;</code> - 二进制模式（Windows上重要，Linux上可省略但建议使用）
+<ul>
+<li><code>&quot;rb&quot;</code>, <code>&quot;wb&quot;</code>, <code>&quot;ab&quot;</code>, <code>&quot;r+b&quot;</code>, <code>&quot;w+b&quot;</code>, <code>&quot;a+b&quot;</code></li>
+</ul>
+</li>
+</ul>
+<p>C11新增模式：</p>
+<ul>
+<li><code>&quot;x&quot;</code> - 独占创建模式（类似 <code>O_EXCL</code>）
+<ul>
+<li><code>&quot;wx&quot;</code>, <code>&quot;w+x&quot;</code>, <code>&quot;wbx&quot;</code> - 如果文件存在则失败</li>
+</ul>
+</li>
+</ul>
+<h2 id="linux下文件访问权限格式">Linux下文件访问权限格式
+</h2><h3 id="文件格式">文件格式
+</h3><p><strong>八进制表示法</strong></p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl"><span class="cp"># 语法：u g o
+</span></span></span><span class="line"><span class="cl"><span class="cp"># u: 所有者(user), g: 所属组(group), o: 其他人(other)
+</span></span></span><span class="line"><span class="cl"><span class="cp"></span>
+</span></span><span class="line"><span class="cl"><span class="mo">0644</span>  <span class="err">#</span> <span class="n">rw</span><span class="o">-</span><span class="n">r</span><span class="o">--</span><span class="n">r</span><span class="o">--</span>
+</span></span><span class="line"><span class="cl"><span class="mo">0755</span>  <span class="err">#</span> <span class="n">rwxr</span><span class="o">-</span><span class="n">xr</span><span class="o">-</span><span class="n">x</span>
+</span></span><span class="line"><span class="cl"><span class="mo">0700</span>  <span class="err">#</span> <span class="n">rwx</span><span class="o">------</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>前面的0表示八进制</p>
+<p><strong>权限位对应关系</strong></p>
+<div class="table-wrapper"><table>
+<thead>
+<tr>
+<th style="text-align:left">八进制</th>
+<th style="text-align:left">二进制</th>
+<th style="text-align:left">权限</th>
+<th style="text-align:left">说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left">0</td>
+<td style="text-align:left">000</td>
+<td style="text-align:left">&mdash;</td>
+<td style="text-align:left">无权限</td>
+</tr>
+<tr>
+<td style="text-align:left">1</td>
+<td style="text-align:left">001</td>
+<td style="text-align:left">&ndash;x</td>
+<td style="text-align:left">仅执行</td>
+</tr>
+<tr>
+<td style="text-align:left">2</td>
+<td style="text-align:left">010</td>
+<td style="text-align:left">-w-</td>
+<td style="text-align:left">仅写入</td>
+</tr>
+<tr>
+<td style="text-align:left">3</td>
+<td style="text-align:left">011</td>
+<td style="text-align:left">-wx</td>
+<td style="text-align:left">写入和执行</td>
+</tr>
+<tr>
+<td style="text-align:left">4</td>
+<td style="text-align:left">100</td>
+<td style="text-align:left">r&ndash;</td>
+<td style="text-align:left">仅读取</td>
+</tr>
+<tr>
+<td style="text-align:left">5</td>
+<td style="text-align:left">101</td>
+<td style="text-align:left">r-x</td>
+<td style="text-align:left">读取和执行</td>
+</tr>
+<tr>
+<td style="text-align:left">6</td>
+<td style="text-align:left">110</td>
+<td style="text-align:left">rw-</td>
+<td style="text-align:left">读取和写入</td>
+</tr>
+<tr>
+<td style="text-align:left">7</td>
+<td style="text-align:left">111</td>
+<td style="text-align:left">rwx</td>
+<td style="text-align:left">所有权限</td>
+</tr>
+</tbody>
+</table></div>
+<h3 id="权限修改在程序的实现">权限修改在程序的实现
+</h3><p><strong>直接修改</strong></p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl"><span class="cp">#include</span> <span class="cpf">&lt;sys/stat.h&gt;</span><span class="cp">
+</span></span></span><span class="line"><span class="cl"><span class="cp"></span>
+</span></span><span class="line"><span class="cl"><span class="c1">// 使用chmod()系统调用
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="nf">chmod</span><span class="p">(</span><span class="s">&#34;file.txt&#34;</span><span class="p">,</span> <span class="mo">0644</span><span class="p">);</span>      <span class="c1">// rw-r--r--
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="nf">chmod</span><span class="p">(</span><span class="s">&#34;script.sh&#34;</span><span class="p">,</span> <span class="mo">0755</span><span class="p">);</span>     <span class="c1">// rwxr-xr-x
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="nf">chmod</span><span class="p">(</span><span class="s">&#34;secret.txt&#34;</span><span class="p">,</span> <span class="mo">0600</span><span class="p">);</span>    <span class="c1">// rw-------
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="nf">chmod</span><span class="p">(</span><span class="s">&#34;program&#34;</span><span class="p">,</span> <span class="mi">4755</span><span class="p">);</span>       <span class="c1">// rwsr-xr-x (SetUID)
+</span></span></span></code></pre></td></tr></table>
+</div>
+</div><p><strong>umask掩码修改</strong></p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl"><span class="cp">#include</span> <span class="cpf">&lt;sys/stat.h&gt;</span><span class="cp">
+</span></span></span><span class="line"><span class="cl"><span class="cp">#include</span> <span class="cpf">&lt;sys/types.h&gt;</span><span class="cp">
+</span></span></span><span class="line"><span class="cl"><span class="cp"></span>
+</span></span><span class="line"><span class="cl"><span class="kt">int</span> <span class="nf">main</span><span class="p">()</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="kt">mode_t</span> <span class="n">old_mask</span> <span class="o">=</span> <span class="nf">umask</span><span class="p">(</span><span class="mo">0022</span><span class="p">);</span>  <span class="c1">// 设置umask并保存原值
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="c1">// 创建文件，实际权限 = 0666 &amp; ~022 = 0644
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="nf">creat</span><span class="p">(</span><span class="s">&#34;file1.txt&#34;</span><span class="p">,</span> <span class="mo">0666</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="c1">// 恢复原umask
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="nf">umask</span><span class="p">(</span><span class="n">old_mask</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p><strong>文件权限表</strong></p>
+<p><strong>权限对文件的影响</strong></p>
+<div class="table-wrapper"><table>
+<thead>
+<tr>
+<th style="text-align:left">权限</th>
+<th style="text-align:left">对文件的影响</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left"><strong>r</strong> (读)</td>
+<td style="text-align:left">读取文件内容</td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>w</strong> (写)</td>
+<td style="text-align:left">修改文件内容（需要目录写权限才能删除）</td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>x</strong> (执行)</td>
+<td style="text-align:left">执行文件（脚本或二进制）</td>
+</tr>
+</tbody>
+</table></div>
+<p><strong>权限对目录的影响</strong></p>
+<div class="table-wrapper"><table>
+<thead>
+<tr>
+<th style="text-align:left">权限</th>
+<th style="text-align:left">对目录的影响</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left"><strong>r</strong> (读)</td>
+<td style="text-align:left">列出目录内容（ls）</td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>w</strong> (写)</td>
+<td style="text-align:left">在目录中创建/删除/重命名文件</td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>x</strong> (执行)</td>
+<td style="text-align:left">进入目录（cd）或访问文件元数据</td>
+</tr>
+</tbody>
+</table></div>
+<p><strong>后续遇到权限相关问题持续更新！</strong></p>
+
+</section>
+
+
+    <footer class="article-footer">
+    
+
+    </footer>
+
+
+    
+</article>
+
+    
+
+    
+
+<aside class="related-content--wrapper">
+    <h2 class="section-title">相关文章</h2>
+    <div class="related-content">
+        <div class="flex article-list--tile">
+            
+                
+<article class="has-image">
+    <a href="/p/%E8%AE%BE%E5%A4%87%E6%A0%91/">
+        
+        
+            <div class="article-image">
+                <img src="/p/%E8%AE%BE%E5%A4%87%E6%A0%91/beijin.17b7b830a4a6cd22e552c797b90d0697_hu505790309888073029.jpg" 
+                        width="250" 
+                        height="150" 
+                        loading="lazy"
+                        alt="Featured image of post 设备树"
+                        
+                        data-hash="md5-F7e4MKSmzSLlUseXuQ0Glw==">
+                
+            </div>
+        
+
+        <div class="article-details">
+            <h2 class="article-title">设备树</h2>
+        </div>
+    </a>
+</article>
+
+            
+        </div>
+    </div>
+</aside>
+
+     
+    
+        
+    
+
+    <footer class="site-footer">
+    <section class="copyright">
+        &copy; 
+        
+            2024 - 
+        
+        2026 shi1iu
+    </section>
+    
+    <section class="powerby">
+        使用 <a href="https://gohugo.io/" target="_blank" rel="noopener">Hugo</a> 构建 <br />
+        主题 <b><a href="https://github.com/CaiJimmy/hugo-theme-stack" target="_blank" rel="noopener" data-version="3.26.0">Stack</a></b> 由 <a href="https://jimmycai.com" target="_blank" rel="noopener">Jimmy</a> 设计
+    </section>
+</footer>
+
+
+    
+<div class="pswp" tabindex="-1" role="dialog" aria-hidden="true">
+
+    
+    <div class="pswp__bg"></div>
+
+    
+    <div class="pswp__scroll-wrap">
+
+        
+        <div class="pswp__container">
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+        </div>
+
+        
+        <div class="pswp__ui pswp__ui--hidden">
+
+            <div class="pswp__top-bar">
+
+                
+
+                <div class="pswp__counter"></div>
+
+                <button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+
+                <button class="pswp__button pswp__button--share" title="Share"></button>
+
+                <button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+
+                <button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
+
+                
+                
+                <div class="pswp__preloader">
+                    <div class="pswp__preloader__icn">
+                        <div class="pswp__preloader__cut">
+                            <div class="pswp__preloader__donut"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
+                <div class="pswp__share-tooltip"></div>
+            </div>
+
+            <button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+            </button>
+
+            <button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)">
+            </button>
+
+            <div class="pswp__caption">
+                <div class="pswp__caption__center"></div>
+            </div>
+
+        </div>
+
+    </div>
+
+</div><script 
+                src="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.js"integrity="sha256-ePwmChbbvXbsO02lbM3HoHbSHTHFAeChekF1xKJdleo="crossorigin="anonymous"
+                defer
+                >
+            </script><script 
+                src="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe-ui-default.min.js"integrity="sha256-UKkzOn/w1mBxRmLLGrSeyB4e1xbrp4xylgAWb3M42pU="crossorigin="anonymous"
+                defer
+                >
+            </script><link 
+                rel="stylesheet" 
+                href="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/default-skin/default-skin.min.css"crossorigin="anonymous"
+            ><link 
+                rel="stylesheet" 
+                href="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.css"crossorigin="anonymous"
+            >
+
+            </main>
+        </div>
+        <script 
+                src="https://cdn.jsdelivr.net/npm/node-vibrant@3.1.6/dist/vibrant.min.js"integrity="sha256-awcR2jno4kI5X0zL8ex0vi2z&#43;KMkF24hUW8WePSA9HM="crossorigin="anonymous"
+                
+                >
+            </script><script type="text/javascript" src="/ts/main.js" defer></script>
+<script>
+    (function () {
+        const customFont = document.createElement('link');
+        customFont.href = "https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700&display=swap";
+
+        customFont.type = "text/css";
+        customFont.rel = "stylesheet";
+
+        document.head.appendChild(customFont);
+    }());
+</script>
+
+    </body>
+</html>
