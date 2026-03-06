@@ -10,10 +10,10 @@
 <meta property='og:description' content="内核版本不一致导致模块加载失败">
 <meta property='og:url' content='https://shi1iu.github.io/p/%E5%8A%A0%E8%BD%BD%E5%86%85%E6%A0%B8%E7%89%88%E6%9C%AC%E4%B8%8D%E4%B8%80%E8%87%B4%E6%8A%A5%E9%94%99/'>
 <meta property='og:site_name' content='shi1iu'>
-<meta property='og:type' content='article'><meta property='article:section' content='Post' /><meta property='article:published_time' content='2026-03-06T00:00:00&#43;00:00'/><meta property='article:modified_time' content='2026-03-06T00:00:00&#43;00:00'/><meta property='og:image' content='https://shi1iu.github.io/fengjing.jpg' />
+<meta property='og:type' content='article'><meta property='article:section' content='Post' /><meta property='article:published_time' content='2026-03-06T00:00:00&#43;00:00'/><meta property='article:modified_time' content='2026-03-06T00:00:00&#43;00:00'/><meta property='og:image' content='https://shi1iu.github.io/p/%E5%8A%A0%E8%BD%BD%E5%86%85%E6%A0%B8%E7%89%88%E6%9C%AC%E4%B8%8D%E4%B8%80%E8%87%B4%E6%8A%A5%E9%94%99/fengjing.jpg' />
 <meta name="twitter:title" content="加载内核版本不一致报错">
 <meta name="twitter:description" content="内核版本不一致导致模块加载失败"><meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:image" content='https://shi1iu.github.io/fengjing.jpg' />
+    <meta name="twitter:image" content='https://shi1iu.github.io/p/%E5%8A%A0%E8%BD%BD%E5%86%85%E6%A0%B8%E7%89%88%E6%9C%AC%E4%B8%8D%E4%B8%80%E8%87%B4%E6%8A%A5%E9%94%99/fengjing.jpg' />
     <link rel="shortcut icon" href="/favicon.ico" />
 
   
@@ -314,8 +314,12 @@
     <header class="article-header">
         <div class="article-image">
             <a href="/p/%E5%8A%A0%E8%BD%BD%E5%86%85%E6%A0%B8%E7%89%88%E6%9C%AC%E4%B8%8D%E4%B8%80%E8%87%B4%E6%8A%A5%E9%94%99/">
-                
-                    <img src="/fengjing.jpg" loading="lazy" alt="Featured image of post 加载内核版本不一致报错" />
+                <img src="/p/%E5%8A%A0%E8%BD%BD%E5%86%85%E6%A0%B8%E7%89%88%E6%9C%AC%E4%B8%8D%E4%B8%80%E8%87%B4%E6%8A%A5%E9%94%99/fengjing_hu2472329769747176442.jpg"
+                        srcset="/p/%E5%8A%A0%E8%BD%BD%E5%86%85%E6%A0%B8%E7%89%88%E6%9C%AC%E4%B8%8D%E4%B8%80%E8%87%B4%E6%8A%A5%E9%94%99/fengjing_hu2472329769747176442.jpg 800w, /p/%E5%8A%A0%E8%BD%BD%E5%86%85%E6%A0%B8%E7%89%88%E6%9C%AC%E4%B8%8D%E4%B8%80%E8%87%B4%E6%8A%A5%E9%94%99/fengjing_hu6354915972096022975.jpg 1600w"
+                        width="800" 
+                        height="1202" 
+                        loading="lazy"
+                        alt="Featured image of post 加载内核版本不一致报错" />
                 
             </a>
         </div>
@@ -412,14 +416,18 @@
 </span></span></code></pre></td></tr></table>
 </div>
 </div><p>2）然后在内核源码根目录下执行make ARCH=arm CROSS_COMPILE=arm-linux-gnueabihf- menuconfig，在System Type-&gt;Multiple platform selectio下将ARMv6 based platforms (ARM11)选项去掉，只留下ARMv7 based platforms (Cortex-A, PJ4, Scorpion, Krait)，保存配置，然后重新编译内核。</p>
-<p><img src="/assets/image-20260306203344011.png"
-	
-	
-	
+<p><img src="/p/%E5%8A%A0%E8%BD%BD%E5%86%85%E6%A0%B8%E7%89%88%E6%9C%AC%E4%B8%8D%E4%B8%80%E8%87%B4%E6%8A%A5%E9%94%99/assets/image-20260306203344011.png"
+	width="1336"
+	height="486"
+	srcset="/p/%E5%8A%A0%E8%BD%BD%E5%86%85%E6%A0%B8%E7%89%88%E6%9C%AC%E4%B8%8D%E4%B8%80%E8%87%B4%E6%8A%A5%E9%94%99/assets/image-20260306203344011_hu1049096148226751772.png 480w, /p/%E5%8A%A0%E8%BD%BD%E5%86%85%E6%A0%B8%E7%89%88%E6%9C%AC%E4%B8%8D%E4%B8%80%E8%87%B4%E6%8A%A5%E9%94%99/assets/image-20260306203344011_hu1823936530785355033.png 1024w"
 	loading="lazy"
 	
 		alt="image-20260306203344011"
 	
+	
+		class="gallery-image" 
+		data-flex-grow="274"
+		data-flex-basis="659px"
 	
 ></p>
 <p>3）内核重新编译完成后，在include/generated/utsrelease.h中，会生成#define UTS_RELEASE &ldquo;4.1.15-2.0.0+gb63f3f5&rdquo;</p>
