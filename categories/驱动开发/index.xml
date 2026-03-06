@@ -7,7 +7,57 @@
         <generator>Hugo -- gohugo.io</generator>
         <language>zh-cn</language>
         <copyright>shi1iu</copyright>
-        <lastBuildDate>Mon, 02 Feb 2026 00:00:00 +0000</lastBuildDate><atom:link href="https://shi1iu.github.io/categories/%E9%A9%B1%E5%8A%A8%E5%BC%80%E5%8F%91/index.xml" rel="self" type="application/rss+xml" /><item>
+        <lastBuildDate>Fri, 06 Mar 2026 00:00:00 +0000</lastBuildDate><atom:link href="https://shi1iu.github.io/categories/%E9%A9%B1%E5%8A%A8%E5%BC%80%E5%8F%91/index.xml" rel="self" type="application/rss+xml" /><item>
+        <title>加载内核版本不一致报错</title>
+        <link>https://shi1iu.github.io/p/%E5%8A%A0%E8%BD%BD%E5%86%85%E6%A0%B8%E7%89%88%E6%9C%AC%E4%B8%8D%E4%B8%80%E8%87%B4%E6%8A%A5%E9%94%99/</link>
+        <pubDate>Fri, 06 Mar 2026 00:00:00 +0000</pubDate>
+        
+        <guid>https://shi1iu.github.io/p/%E5%8A%A0%E8%BD%BD%E5%86%85%E6%A0%B8%E7%89%88%E6%9C%AC%E4%B8%8D%E4%B8%80%E8%87%B4%E6%8A%A5%E9%94%99/</guid>
+        <description>&lt;img src="https://shi1iu.github.io/fengjing.jpg" alt="Featured image of post 加载内核版本不一致报错" /&gt;&lt;h2 id=&#34;问题描述&#34;&gt;问题描述
+&lt;/h2&gt;&lt;p&gt;我在ubuntun编译出xxx.ko文件发送到板子上，执行insmod xxx.ko，出现“insmod: ERROR: could not insert module led.ko: Invalid module format”错误。&lt;/p&gt;
+&lt;h2 id=&#34;原因查找&#34;&gt;原因查找
+&lt;/h2&gt;&lt;p&gt;1）在linux开发板上，使用uname -r查看linux内核版本为：4.1.15-2.0.0+gb63f3f5&lt;/p&gt;
+&lt;p&gt;2）在linux开发板上，使用modinfo xxx.ko查看.ko文件的vermagic为：4.1.15 SMP preempt mod_unload modversions ARMv6 p2v8&lt;/p&gt;
+&lt;p&gt;3）在linux开发板上，使用dmesg查看错误日志信息，可以找到：version magic &amp;lsquo;4.1.15 SMP preempt mod_unload modversions ARMv6 p2v8&amp;rsquo; should be &amp;lsquo;4.1.15-2.0.0+gb63f3f5 SMP preempt mod_unload modversions ARMv7 p2v8&amp;rsquo;。&lt;/p&gt;
+&lt;p&gt;根据上述信息，可以确定是由于内核版本不一致，以及ARM架构不一致导致的问题。&lt;/p&gt;
+&lt;p&gt;（由于ubuntu虚拟机上用于编译.ko的内核源码与开发板上的linux版本不一致导致的，如果使用与linux开发板一致的内核源码进行.ko的编译便不会出现此问题）&lt;/p&gt;
+&lt;h2 id=&#34;问题解决&#34;&gt;问题解决
+&lt;/h2&gt;&lt;p&gt;如果能够确认linux开发板上的内核版本与编译版本差异不大，可以用下述方法解决。&lt;/p&gt;
+&lt;p&gt;1）在ubuntu虚拟机上的内核源码根目录下，修改Makefile文件，增加EXTRAVERSION = -2.0.0+gb63f3f5，如下所示：&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;2
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;3
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;4
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;5
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-makefile&#34; data-lang=&#34;makefile&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;nv&#34;&gt;VERSION&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;m&#34;&gt;4&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;nv&#34;&gt;PATCHLEVEL&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;m&#34;&gt;1&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;nv&#34;&gt;SUBLEVEL&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;m&#34;&gt;15&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;nv&#34;&gt;EXTRAVERSION&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; -2.0.0+gb63f3f5
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;nv&#34;&gt;NAME&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; Series &lt;span class=&#34;m&#34;&gt;4800&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;p&gt;2）然后在内核源码根目录下执行make ARCH=arm CROSS_COMPILE=arm-linux-gnueabihf- menuconfig，在System Type-&amp;gt;Multiple platform selectio下将ARMv6 based platforms (ARM11)选项去掉，只留下ARMv7 based platforms (Cortex-A, PJ4, Scorpion, Krait)，保存配置，然后重新编译内核。&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;https://shi1iu.github.io/assets/image-20260306203344011.png&#34;
+	
+	
+	
+	loading=&#34;lazy&#34;
+	
+		alt=&#34;image-20260306203344011&#34;
+	
+	
+&gt;&lt;/p&gt;
+&lt;p&gt;3）内核重新编译完成后，在include/generated/utsrelease.h中，会生成#define UTS_RELEASE &amp;ldquo;4.1.15-2.0.0+gb63f3f5&amp;rdquo;&lt;/p&gt;
+&lt;p&gt;4）最后我们再重新编译xxx.ko文件，编译完成后使用modinfo xxx.ko的模块的vermagic为：4.1.15-2.0.0+gb63f3f5 SMP preempt mod_unload modversions ARMv7 p2v8，与linux开发板上的内核版本一致。&lt;/p&gt;
+&lt;p&gt;5）发送到linux开发板，并进行insmod xxx.ko，即可成功加载驱动。&lt;/p&gt;
+&lt;p&gt;6）在linux开发板上，使用lsmod可以查看到驱动加载成功。&lt;/p&gt;
+</description>
+        </item>
+        <item>
         <title>设备树</title>
         <link>https://shi1iu.github.io/p/%E8%AE%BE%E5%A4%87%E6%A0%91/</link>
         <pubDate>Mon, 02 Feb 2026 00:00:00 +0000</pubDate>
