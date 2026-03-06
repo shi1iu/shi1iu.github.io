@@ -390,15 +390,59 @@
     
     <h2 id="问题描述">问题描述
 </h2><p>我在ubuntun编译出xxx.ko文件发送到板子上，执行insmod xxx.ko，出现“insmod: ERROR: could not insert module led.ko: Invalid module format”错误。</p>
+<p><img src="/p/%E5%8A%A0%E8%BD%BD%E5%86%85%E6%A0%B8%E7%89%88%E6%9C%AC%E4%B8%8D%E4%B8%80%E8%87%B4%E6%8A%A5%E9%94%99/assets/image-20260306204845788.png"
+	width="633"
+	height="51"
+	srcset="/p/%E5%8A%A0%E8%BD%BD%E5%86%85%E6%A0%B8%E7%89%88%E6%9C%AC%E4%B8%8D%E4%B8%80%E8%87%B4%E6%8A%A5%E9%94%99/assets/image-20260306204845788_hu15745407992693363698.png 480w, /p/%E5%8A%A0%E8%BD%BD%E5%86%85%E6%A0%B8%E7%89%88%E6%9C%AC%E4%B8%8D%E4%B8%80%E8%87%B4%E6%8A%A5%E9%94%99/assets/image-20260306204845788_hu3075971228159528798.png 1024w"
+	loading="lazy"
+	
+		alt="image-20260306204845788"
+	
+	
+		class="gallery-image" 
+		data-flex-grow="1241"
+		data-flex-basis="2978px"
+	
+></p>
 <h2 id="原因查找">原因查找
-</h2><p>1）在linux开发板上，使用uname -r查看linux内核版本为：4.1.15-2.0.0+gb63f3f5</p>
-<p>2）在linux开发板上，使用modinfo xxx.ko查看.ko文件的vermagic为：4.1.15 SMP preempt mod_unload modversions ARMv6 p2v8</p>
-<p>3）在linux开发板上，使用dmesg查看错误日志信息，可以找到：version magic &lsquo;4.1.15 SMP preempt mod_unload modversions ARMv6 p2v8&rsquo; should be &lsquo;4.1.15-2.0.0+gb63f3f5 SMP preempt mod_unload modversions ARMv7 p2v8&rsquo;。</p>
+</h2><p>1）在linux开发板上，使用uname -r查看linux内核版本为：4.1.15-g3dc0a4b</p>
+<p><img src="/p/%E5%8A%A0%E8%BD%BD%E5%86%85%E6%A0%B8%E7%89%88%E6%9C%AC%E4%B8%8D%E4%B8%80%E8%87%B4%E6%8A%A5%E9%94%99/assets/image-20260306204954953.png"
+	width="265"
+	height="29"
+	srcset="/p/%E5%8A%A0%E8%BD%BD%E5%86%85%E6%A0%B8%E7%89%88%E6%9C%AC%E4%B8%8D%E4%B8%80%E8%87%B4%E6%8A%A5%E9%94%99/assets/image-20260306204954953_hu17026538892027901911.png 480w, /p/%E5%8A%A0%E8%BD%BD%E5%86%85%E6%A0%B8%E7%89%88%E6%9C%AC%E4%B8%8D%E4%B8%80%E8%87%B4%E6%8A%A5%E9%94%99/assets/image-20260306204954953_hu14785416799886094416.png 1024w"
+	loading="lazy"
+	
+		alt="image-20260306204954953"
+	
+	
+		class="gallery-image" 
+		data-flex-grow="913"
+		data-flex-basis="2193px"
+	
+></p>
+<p>2）在linux开发板上，使用modinfo xxx.ko查看.ko文件的vermagic为：4.1.15 SMP mod_unload modversions ARMv6 p2v8</p>
+<p><img src="/p/%E5%8A%A0%E8%BD%BD%E5%86%85%E6%A0%B8%E7%89%88%E6%9C%AC%E4%B8%8D%E4%B8%80%E8%87%B4%E6%8A%A5%E9%94%99/assets/image-20260306205021022.png"
+	width="512"
+	height="112"
+	srcset="/p/%E5%8A%A0%E8%BD%BD%E5%86%85%E6%A0%B8%E7%89%88%E6%9C%AC%E4%B8%8D%E4%B8%80%E8%87%B4%E6%8A%A5%E9%94%99/assets/image-20260306205021022_hu1639451022409317824.png 480w, /p/%E5%8A%A0%E8%BD%BD%E5%86%85%E6%A0%B8%E7%89%88%E6%9C%AC%E4%B8%8D%E4%B8%80%E8%87%B4%E6%8A%A5%E9%94%99/assets/image-20260306205021022_hu13163654855816762008.png 1024w"
+	loading="lazy"
+	
+		alt="image-20260306205021022"
+	
+	
+		class="gallery-image" 
+		data-flex-grow="457"
+		data-flex-basis="1097px"
+	
+></p>
+<p>3）在linux开发板上，使用dmesg查看错误日志信息，可以找到：version magic &lsquo;4.1.15 SMP preempt mod_unload modversions ARMv6 p2v8&rsquo; should be &lsquo;4.1.15-g3dc0a4b SMP preempt mod_unload modversions ARMv7 p2v8&rsquo;。</p>
 <p>根据上述信息，可以确定是由于内核版本不一致，以及ARM架构不一致导致的问题。</p>
 <p>（由于ubuntu虚拟机上用于编译.ko的内核源码与开发板上的linux版本不一致导致的，如果使用与linux开发板一致的内核源码进行.ko的编译便不会出现此问题）</p>
 <h2 id="问题解决">问题解决
-</h2><p>如果能够确认linux开发板上的内核版本与编译版本差异不大，可以用下述方法解决。</p>
-<p>1）在ubuntu虚拟机上的内核源码根目录下，修改Makefile文件，增加EXTRAVERSION = -2.0.0+gb63f3f5，如下所示：</p>
+</h2><p>解决问题来源于博客园-<a class="link" href="https://home.cnblogs.com/u/zhulin0502/"  target="_blank" rel="noopener"
+    >倾听雪落</a></p>
+<p>如果能够确认linux开发板上的内核版本与编译版本差异不大，可以用下述方法解决。</p>
+<p>1）在ubuntu虚拟机上的内核源码根目录下，修改Makefile文件，增加EXTRAVERSION = -g3dc0a4b，如下所示：</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
@@ -411,7 +455,7 @@
 <pre tabindex="0" class="chroma"><code class="language-makefile" data-lang="makefile"><span class="line"><span class="cl"><span class="nv">VERSION</span> <span class="o">=</span> <span class="m">4</span>
 </span></span><span class="line"><span class="cl"><span class="nv">PATCHLEVEL</span> <span class="o">=</span> <span class="m">1</span>
 </span></span><span class="line"><span class="cl"><span class="nv">SUBLEVEL</span> <span class="o">=</span> <span class="m">15</span>
-</span></span><span class="line"><span class="cl"><span class="nv">EXTRAVERSION</span> <span class="o">=</span> -2.0.0+gb63f3f5
+</span></span><span class="line"><span class="cl"><span class="nv">EXTRAVERSION</span> <span class="o">=</span> -g3dc0a4b
 </span></span><span class="line"><span class="cl"><span class="nv">NAME</span> <span class="o">=</span> Series <span class="m">4800</span>
 </span></span></code></pre></td></tr></table>
 </div>
@@ -430,8 +474,8 @@
 		data-flex-basis="659px"
 	
 ></p>
-<p>3）内核重新编译完成后，在include/generated/utsrelease.h中，会生成#define UTS_RELEASE &ldquo;4.1.15-2.0.0+gb63f3f5&rdquo;</p>
-<p>4）最后我们再重新编译xxx.ko文件，编译完成后使用modinfo xxx.ko的模块的vermagic为：4.1.15-2.0.0+gb63f3f5 SMP preempt mod_unload modversions ARMv7 p2v8，与linux开发板上的内核版本一致。</p>
+<p>3）内核重新编译完成后，在include/generated/utsrelease.h中，会生成#define UTS_RELEASE &ldquo;4.1.15-g3dc0a4b&rdquo;</p>
+<p>4）最后我们再重新编译xxx.ko文件，编译完成后使用modinfo xxx.ko的模块的vermagic为：4.1.15-g3dc0a4b SMP preempt mod_unload modversions ARMv7 p2v8，与linux开发板上的内核版本一致。</p>
 <p>5）发送到linux开发板，并进行insmod xxx.ko，即可成功加载驱动。</p>
 <p>6）在linux开发板上，使用lsmod可以查看到驱动加载成功。</p>
 
