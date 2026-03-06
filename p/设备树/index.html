@@ -297,14 +297,38 @@
             <nav id="TableOfContents">
   <ol>
     <li><a href="#设备树是什么">设备树是什么</a></li>
-    <li><a href="#设备树如何工作">设备树如何工作</a>
+    <li><a href="#设备树语法">设备树语法</a>
+      <ol>
+        <li><a href="#节点">节点</a></li>
+        <li><a href="#典型节点">典型节点</a>
+          <ol>
+            <li><a href="#chosen-node">chosen node</a></li>
+            <li><a href="#aliases-node">aliases node</a></li>
+            <li><a href="#memory-node">memory node</a></li>
+          </ol>
+        </li>
+        <li><a href="#设备树中的引用">设备树中的引用</a></li>
+      </ol>
+    </li>
+    <li><a href="#如何使用">如何使用？</a>
+      <ol>
+        <li><a href="#使用步骤">使用步骤</a></li>
+        <li><a href="#驱动中如何使用设备树">驱动中如何使用设备树？</a>
+          <ol>
+            <li><a href="#获取设备节点">获取设备节点</a></li>
+            <li><a href="#获取资源核心-of-操作函数">获取资源——核心 OF 操作函数</a></li>
+          </ol>
+        </li>
+      </ol>
+    </li>
+    <li><a href="#设备树如何工作进阶">设备树如何工作（进阶）</a>
       <ol>
         <li><a href="#编译阶段">编译阶段</a></li>
         <li><a href="#引导阶段">引导阶段</a></li>
         <li><a href="#内核初始化阶段">内核初始化阶段</a></li>
       </ol>
     </li>
-    <li><a href="#驱动匹配设备树">驱动匹配设备树</a>
+    <li><a href="#驱动匹配设备树进阶">驱动匹配设备树（进阶）</a>
       <ol>
         <li><a href="#相关数据结构">相关数据结构</a>
           <ol>
@@ -414,7 +438,219 @@
 <li>dtc device tree compiler 设备树编译/反编译/调试工具</li>
 <li>dtb device tree blob 设备树二进制文件</li>
 </ol>
-<h2 id="设备树如何工作">设备树如何工作
+<p>uboot只会加载一个设备树文件，即dtb文件</p>
+<h2 id="设备树语法">设备树语法
+</h2><h3 id="节点">节点
+</h3><p>根节点 子节点</p>
+<p><img src="/p/%E8%AE%BE%E5%A4%87%E6%A0%91/assets/image-20260305144540580.png"
+	width="1193"
+	height="639"
+	srcset="/p/%E8%AE%BE%E5%A4%87%E6%A0%91/assets/image-20260305144540580_hu11172003493297506642.png 480w, /p/%E8%AE%BE%E5%A4%87%E6%A0%91/assets/image-20260305144540580_hu16006711070582788176.png 1024w"
+	loading="lazy"
+	
+		alt="image-20260305144540580"
+	
+	
+		class="gallery-image" 
+		data-flex-grow="186"
+		data-flex-basis="448px"
+	
+></p>
+<p>在节点的{}里面是描述该节点的属性（property），即设备的特性。它的值是多样化的：</p>
+<p>1.它可以是字符串string，如①；也可能是字符串数组string-list，如②</p>
+<p>2.它也可以是32 bit unsigned integers，如cell⑧，整形用&lt;&gt;表示</p>
+<p>3.它也可以是binary data，如③，十六进制用[]表示</p>
+<p>4.它也可能是空，如⑦</p>
+<h3 id="典型节点">典型节点
+</h3><h4 id="chosen-node">chosen node
+</h4><div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">chosen {
+</span></span><span class="line"><span class="cl">	bootargs = &#34;tegraid=40.0.0.00.00 vmalloc=256M video=tegrafb console=ttyS0,115200n8 earlyprintk&#34;;
+</span></span><span class="line"><span class="cl">};
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>chosen node 主要用来描述由系统指定的runtime parameter，它并没有描述任何硬件设备节点信息。原先通过tag list传递的一些linux kernel运行的参数，可以通过chosen节点来传递。如command line可以通过bootargs这个property来传递。如果存在chosen node，它的parent节点必须为“/”根节点。（本示例都以imx6ull的硬件环境下讲解）</p>
+<h4 id="aliases-node">aliases node
+</h4><div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">aliases {
+</span></span><span class="line"><span class="cl">	i2c6 = &amp;pca9546_i2c0;
+</span></span><span class="line"><span class="cl">	i2c7 = &amp;pca9546_i2c1;
+</span></span><span class="line"><span class="cl">	i2c8 = &amp;pca9546_i2c2;
+</span></span><span class="line"><span class="cl">	i2c9 = &amp;pca9546_i2c3;
+</span></span><span class="line"><span class="cl">};
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>aliases node用来定义别名，类似C++中引用。上面是一个在.dtsi中的典型应用，当使用i2c6时，也即使用pca9546_i2c0，使得引用节点变得简单方便。例：当.dts include 该.dtsi时，将i2c6的status属性赋值为okay，则表明该主板上的pca9546_i2c0处于enable状态；反之，status赋值为disabled，则表明该主板上的pca9546_i2c0处于disenable状态。</p>
+<h4 id="memory-node">memory node
+</h4><div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">memory {
+</span></span><span class="line"><span class="cl">device_type = &#34;memory&#34;;
+</span></span><span class="line"><span class="cl">reg = &lt;0x00000000 0x20000000&gt;; /* 512 MB */
+</span></span><span class="line"><span class="cl">};
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>对于memory node，device_type必须为memory，由之前的描述可以知道该memory node是以0x00000000为起始地址，以0x20000000为结束地址的512MB的空间。</p>
+<p>一般而言，在.dts中不对memory进行描述，而是通过bootargs中类似521M@0x00000000的方式传递给内核。</p>
+<h3 id="设备树中的引用">设备树中的引用
+</h3><p>示例</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">/ {
+</span></span><span class="line"><span class="cl">    uart1: serial@02020000 {
+</span></span><span class="line"><span class="cl">        compatible = &#34;fsl,imx6ul-uart&#34;;
+</span></span><span class="line"><span class="cl">        reg = &lt;0x02020000 0x4000&gt;;
+</span></span><span class="line"><span class="cl">        status = &#34;disabled&#34;;
+</span></span><span class="line"><span class="cl">    };
+</span></span><span class="line"><span class="cl">};
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">&amp;uart1 {
+</span></span><span class="line"><span class="cl">    status = &#34;okay&#34;;
+</span></span><span class="line"><span class="cl">};
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>标签格式：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">标签: 节点名@地址 {
+</span></span><span class="line"><span class="cl">    // 节点内容
+</span></span><span class="line"><span class="cl">};
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>编译后，<code>uart1</code> 节点最终会包含 <code>status = &quot;okay&quot;</code>，但标签 <code>uart1:</code> 和引用 <code>&amp;uart1</code> 都会消失。</p>
+<p>在板子的 <code>/proc/device-tree/</code> 下，你会看到目录 <code>/serial@02020000/</code>（或者 <code>/soc/serial@02020000/</code>，取决于具体路径），里面有一个 <code>status</code> 文件，内容为 <code>&quot;okay&quot;</code>。</p>
+<p><strong>没有任何名为 <code>&amp;uart1</code> 或 <code>uart1</code> 的文件或目录存在</strong>。</p>
+<p><strong><code>&amp;xxxx</code> 是设备树源文件（<code>.dts</code>）中的语法</strong>，它用于引用一个预先定义的<strong>标签（label）</strong>，目的是将后续的属性或子节点合并到那个标签所代表的节点中。这相当于一种“粘合剂”，方便在多个地方修改同一个节点。</p>
+<h2 id="如何使用">如何使用？
+</h2><h3 id="使用步骤">使用步骤
+</h3><ol>
+<li>在你的内核环境下编译dts为dtb文件</li>
+<li>在你的开发板（或其他环境）下替换原来的dtb文件</li>
+<li>重启内核，查看设备节点是否存在，在板子上，<code>/proc/device-tree</code> 目录是内核提供的设备树运行时视图，它的<strong>一级目录和文件直接对应设备树根节点（<code>/</code>）下的子节点和属性</strong>。</li>
+<li>编写驱动代码和应用代码</li>
+</ol>
+<h3 id="驱动中如何使用设备树">驱动中如何使用设备树？
+</h3><h4 id="获取设备节点">获取设备节点
+</h4><p><code>dtsled.nd = of_find_node_by_path(&quot;/alphaled&quot;);</code></p>
+<p>eg：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span><span class="lnt">8
+</span><span class="lnt">9
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl"> /* 获取设备树中的属性数据 */ 
+</span></span><span class="line"><span class="cl">     /* 1、获取设备节点：alphaled */ 
+</span></span><span class="line"><span class="cl">     dtsled.nd = of_find_node_by_path(&#34;/alphaled&#34;); 
+</span></span><span class="line"><span class="cl">     if(dtsled.nd == NULL) { 
+</span></span><span class="line"><span class="cl">         printk(&#34;alphaled node can not found!\r\n&#34;); 
+</span></span><span class="line"><span class="cl">         return -EINVAL; 
+</span></span><span class="line"><span class="cl">     } else { 
+</span></span><span class="line"><span class="cl">         printk(&#34;alphaled node has been found!\r\n&#34;); 
+</span></span><span class="line"><span class="cl">     }
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>驱动与设备树节点绑定的“信物”是 <code>compatible</code> 属性。</p>
+<h4 id="获取资源核心-of-操作函数">获取资源——核心 OF 操作函数
+</h4><p>一旦进入 <code>probe</code> 函数，驱动就可以通过设备节点指针（通常是 <code>struct device_node *np = pdev-&gt;dev.of_node;</code>）来提取所需的硬件信息了。以下是一些最常用的操作函数：</p>
+<div class="table-wrapper"><table>
+<thead>
+<tr>
+<th style="text-align:left">资源类型</th>
+<th style="text-align:left">常用函数</th>
+<th style="text-align:left">作用</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left"><strong>寄存器地址</strong></td>
+<td style="text-align:left"><code>of_iomap(np, 0)</code></td>
+<td style="text-align:left">将 <code>reg</code> 属性中第0段地址直接映射为虚拟地址，省去了 <code>ioremap</code> 的步骤。</td>
+</tr>
+<tr>
+<td style="text-align:left"></td>
+<td style="text-align:left"><code>of_address_to_resource(np, 0, &amp;res)</code></td>
+<td style="text-align:left">获取 <code>reg</code> 属性，并填充到一个 <code>struct resource</code> 结构体中，之后可以用 <code>devm_ioremap_resource</code> 进行映射。</td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>中断号</strong></td>
+<td style="text-align:left"><code>irq_of_parse_and_map(np, 0)</code></td>
+<td style="text-align:left">解析 <code>interrupts</code> 属性第0个中断并映射为Linux中断号。</td>
+</tr>
+<tr>
+<td style="text-align:left"></td>
+<td style="text-align:left"><code>of_irq_get(np, 0)</code></td>
+<td style="text-align:left">功能类似，推荐使用。</td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>GPIO</strong></td>
+<td style="text-align:left"><code>of_get_named_gpio(np, &quot;enable-gpios&quot;, 0)</code></td>
+<td style="text-align:left">获取名为 <code>&quot;enable-gpios&quot;</code> 的属性中定义的GPIO编号，之后可以用 <code>gpio_request</code> 等函数操作。</td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>整型属性</strong></td>
+<td style="text-align:left"><code>of_property_read_u32(np, &quot;clock-frequency&quot;, &amp;val)</code></td>
+<td style="text-align:left">读取一个32位整型属性值。</td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>属性长度</strong></td>
+<td style="text-align:left"><code>of_property_count_elems_of_size(np, &quot;reg&quot;, sizeof(u32))</code></td>
+<td style="text-align:left">获取 <code>reg</code> 属性中包含了多少个地址/长度对。</td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>字符串</strong></td>
+<td style="text-align:left"><code>of_property_read_string(np, &quot;status&quot;, &amp;str)</code></td>
+<td style="text-align:left">读取字符串属性。</td>
+</tr>
+</tbody>
+</table></div>
+<h2 id="设备树如何工作进阶">设备树如何工作（进阶）
 </h2><h3 id="编译阶段">编译阶段
 </h3><p>dtc :用于编译dts文件为dtb文件</p>
 <p>dtb :用于kernel去使用设备树</p>
@@ -514,7 +750,7 @@
 </span></span></code></pre></td></tr></table>
 </div>
 </div><p>这样就得到了设备树数据，后续就需要驱动去匹配了。</p>
-<h2 id="驱动匹配设备树">驱动匹配设备树
+<h2 id="驱动匹配设备树进阶">驱动匹配设备树（进阶）
 </h2><p>这里需要介绍几个核心的结构体：</p>
 <h3 id="相关数据结构">相关数据结构
 </h3><h4 id="设备树相关结构">设备树相关结构
