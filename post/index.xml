@@ -116,12 +116,12 @@
 </description>
         </item>
         <item>
-        <title>stm32移植letter-shell</title>
+        <title>STM32移植letter-shell</title>
         <link>https://shi1iu.github.io/p/stm32%E7%A7%BB%E6%A4%8Dletter-shell/</link>
         <pubDate>Wed, 11 Mar 2026 00:00:00 +0000</pubDate>
         
         <guid>https://shi1iu.github.io/p/stm32%E7%A7%BB%E6%A4%8Dletter-shell/</guid>
-        <description>&lt;img src="https://shi1iu.github.io/p/stm32%E7%A7%BB%E6%A4%8Dletter-shell/letter-shell.jpg" alt="Featured image of post stm32移植letter-shell" /&gt;&lt;h2 id=&#34;stm32移植letter-shell&#34;&gt;stm32移植letter-shell
+        <description>&lt;img src="https://shi1iu.github.io/p/stm32%E7%A7%BB%E6%A4%8Dletter-shell/letter-shell.jpg" alt="Featured image of post STM32移植letter-shell" /&gt;&lt;h2 id=&#34;stm32移植letter-shell&#34;&gt;STM32移植letter-shell
 &lt;/h2&gt;&lt;h3 id=&#34;需求&#34;&gt;需求
 &lt;/h3&gt;&lt;p&gt;在设计OTA升级的过程中，bootloader引导代码中，需要在waiting倒计时后进入命令模式，需要像uboot一样有一个命令行的形式，类似&lt;/p&gt;
 &lt;p&gt;&lt;img src=&#34;https://shi1iu.github.io/p/stm32%E7%A7%BB%E6%A4%8Dletter-shell/assets/image-20260311162033362.png&#34;

@@ -2,16 +2,16 @@
 <html lang="zh-cn" dir="ltr">
     <head><meta charset='utf-8'>
 <meta name='viewport' content='width=device-width, initial-scale=1'><meta name='description' content="STM32裸机实现letter-shell，无操作系统和RTOS">
-<title>stm32移植letter-shell</title>
+<title>STM32移植letter-shell</title>
 
 <link rel='canonical' href='https://shi1iu.github.io/p/stm32%E7%A7%BB%E6%A4%8Dletter-shell/'>
 
-<link rel="stylesheet" href="/scss/style.min.0304c6baf04e01a8fe70693791cb744d56a3578a3120a8796cefc66825aa39c7.css"><meta property='og:title' content="stm32移植letter-shell">
+<link rel="stylesheet" href="/scss/style.min.0304c6baf04e01a8fe70693791cb744d56a3578a3120a8796cefc66825aa39c7.css"><meta property='og:title' content="STM32移植letter-shell">
 <meta property='og:description' content="STM32裸机实现letter-shell，无操作系统和RTOS">
 <meta property='og:url' content='https://shi1iu.github.io/p/stm32%E7%A7%BB%E6%A4%8Dletter-shell/'>
 <meta property='og:site_name' content='shi1iu'>
 <meta property='og:type' content='article'><meta property='article:section' content='Post' /><meta property='article:published_time' content='2026-03-11T00:00:00&#43;00:00'/><meta property='article:modified_time' content='2026-03-11T00:00:00&#43;00:00'/><meta property='og:image' content='https://shi1iu.github.io/p/stm32%E7%A7%BB%E6%A4%8Dletter-shell/letter-shell.jpg' />
-<meta name="twitter:title" content="stm32移植letter-shell">
+<meta name="twitter:title" content="STM32移植letter-shell">
 <meta name="twitter:description" content="STM32裸机实现letter-shell，无操作系统和RTOS"><meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:image" content='https://shi1iu.github.io/p/stm32%E7%A7%BB%E6%A4%8Dletter-shell/letter-shell.jpg' />
     <link rel="shortcut icon" href="/favicon.ico" />
@@ -296,7 +296,7 @@
         <div class="widget--toc">
             <nav id="TableOfContents">
   <ol>
-    <li><a href="#stm32移植letter-shell">stm32移植letter-shell</a>
+    <li><a href="#stm32移植letter-shell">STM32移植letter-shell</a>
       <ol>
         <li><a href="#需求">需求</a></li>
         <li><a href="#移植说明">移植说明</a></li>
@@ -334,7 +334,7 @@
                         width="800" 
                         height="1067" 
                         loading="lazy"
-                        alt="Featured image of post stm32移植letter-shell" />
+                        alt="Featured image of post STM32移植letter-shell" />
                 
             </a>
         </div>
@@ -357,7 +357,7 @@
 
     <div class="article-title-wrapper">
         <h2 class="article-title">
-            <a href="/p/stm32%E7%A7%BB%E6%A4%8Dletter-shell/">stm32移植letter-shell</a>
+            <a href="/p/stm32%E7%A7%BB%E6%A4%8Dletter-shell/">STM32移植letter-shell</a>
         </h2>
     
         
@@ -399,7 +399,7 @@
     <section class="article-content">
     
     
-    <h2 id="stm32移植letter-shell">stm32移植letter-shell
+    <h2 id="stm32移植letter-shell">STM32移植letter-shell
 </h2><h3 id="需求">需求
 </h3><p>在设计OTA升级的过程中，bootloader引导代码中，需要在waiting倒计时后进入命令模式，需要像uboot一样有一个命令行的形式，类似</p>
 <p><img src="/p/stm32%E7%A7%BB%E6%A4%8Dletter-shell/assets/image-20260311162033362.png"
