@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+    <channel>
+        <title>OTA on shi1iu</title>
+        <link>https://shi1iu.github.io/categories/ota/</link>
+        <description>Recent content in OTA on shi1iu</description>
+        <generator>Hugo -- gohugo.io</generator>
+        <language>zh-cn</language>
+        <copyright>shi1iu</copyright>
+        <lastBuildDate>Wed, 11 Mar 2026 00:00:00 +0000</lastBuildDate><atom:link href="https://shi1iu.github.io/categories/ota/index.xml" rel="self" type="application/rss+xml" /><item>
+        <title>STM32OTA升级策略与实现</title>
+        <link>https://shi1iu.github.io/p/stm32ota%E5%8D%87%E7%BA%A7%E7%AD%96%E7%95%A5%E4%B8%8E%E5%AE%9E%E7%8E%B0/</link>
+        <pubDate>Wed, 11 Mar 2026 00:00:00 +0000</pubDate>
+        
+        <guid>https://shi1iu.github.io/p/stm32ota%E5%8D%87%E7%BA%A7%E7%AD%96%E7%95%A5%E4%B8%8E%E5%AE%9E%E7%8E%B0/</guid>
+        <description>&lt;img src="https://shi1iu.github.io/p/stm32ota%E5%8D%87%E7%BA%A7%E7%AD%96%E7%95%A5%E4%B8%8E%E5%AE%9E%E7%8E%B0/OTA.jpg" alt="Featured image of post STM32OTA升级策略与实现" /&gt;&lt;h2 id=&#34;stm32ota升级策略与实现&#34;&gt;STM32OTA升级策略与实现
+&lt;/h2&gt;&lt;h3 id=&#34;背景&#34;&gt;背景
+&lt;/h3&gt;&lt;p&gt;由于在业务过程中，需要对整个板子的模块供电进行一个控制、对各个芯片的温度进行上报、对芯片的boot方式进行控制，并且业务需要进行小批量的量产，可能后续需要用户进行升级此控制电源已经上报的功能，所以需要设计OTA升级方案。&lt;/p&gt;
+&lt;p&gt;使用stm32f100r8t6b作为实验。&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;https://shi1iu.github.io/p/stm32ota%E5%8D%87%E7%BA%A7%E7%AD%96%E7%95%A5%E4%B8%8E%E5%AE%9E%E7%8E%B0/assets/image-20260311170855961.png&#34;
+	width=&#34;1196&#34;
+	height=&#34;549&#34;
+	srcset=&#34;https://shi1iu.github.io/p/stm32ota%E5%8D%87%E7%BA%A7%E7%AD%96%E7%95%A5%E4%B8%8E%E5%AE%9E%E7%8E%B0/assets/image-20260311170855961_hu1800746427415126804.png 480w, https://shi1iu.github.io/p/stm32ota%E5%8D%87%E7%BA%A7%E7%AD%96%E7%95%A5%E4%B8%8E%E5%AE%9E%E7%8E%B0/assets/image-20260311170855961_hu5217463495117478113.png 1024w&#34;
+	loading=&#34;lazy&#34;
+	
+		alt=&#34;image-20260311170855961&#34;
+	
+	
+		class=&#34;gallery-image&#34; 
+		data-flex-grow=&#34;217&#34;
+		data-flex-basis=&#34;522px&#34;
+	
+&gt;&lt;/p&gt;
+&lt;h3 id=&#34;需求&#34;&gt;需求
+&lt;/h3&gt;&lt;h4 id=&#34;ota升级&#34;&gt;OTA升级
+&lt;/h4&gt;&lt;p&gt;这个需求是最核心的需求，我采用的是ymodem的协议，具体协议内容我没有特别仔细看。&lt;/p&gt;
+&lt;p&gt;注意！stm32中代码的存放，代码段大部分放在flash（rom）中，从0x08008000开始&lt;/p&gt;
+&lt;p&gt;Flash分区&lt;/p&gt;
+&lt;p&gt;方案1：参考别人的 具体不记得哪里来的了&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;https://shi1iu.github.io/p/stm32ota%E5%8D%87%E7%BA%A7%E7%AD%96%E7%95%A5%E4%B8%8E%E5%AE%9E%E7%8E%B0/assets/3.jpg&#34;
+	width=&#34;1187&#34;
+	height=&#34;742&#34;
+	srcset=&#34;https://shi1iu.github.io/p/stm32ota%E5%8D%87%E7%BA%A7%E7%AD%96%E7%95%A5%E4%B8%8E%E5%AE%9E%E7%8E%B0/assets/3_hu5158975539799435283.jpg 480w, https://shi1iu.github.io/p/stm32ota%E5%8D%87%E7%BA%A7%E7%AD%96%E7%95%A5%E4%B8%8E%E5%AE%9E%E7%8E%B0/assets/3_hu805131633548034465.jpg 1024w&#34;
+	loading=&#34;lazy&#34;
+	
+		alt=&#34;3&#34;
+	
+	
+		class=&#34;gallery-image&#34; 
+		data-flex-grow=&#34;159&#34;
+		data-flex-basis=&#34;383px&#34;
+	
+&gt;&lt;/p&gt;
+&lt;p&gt;此方案是BootLoader作用是如果有App2的有效数据，测将App2的区域更新到App1中，并将BootLoader跳转到App1中，如果APP2中无效，直接跳转到App1。&lt;/p&gt;
+&lt;p&gt;App1的代码具有升级的功能，在app1进行升级。&lt;/p&gt;
+&lt;p&gt;方案2：&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;https://shi1iu.github.io/p/stm32ota%E5%8D%87%E7%BA%A7%E7%AD%96%E7%95%A5%E4%B8%8E%E5%AE%9E%E7%8E%B0/assets/image-20260311171300899.png&#34;
+	width=&#34;432&#34;
+	height=&#34;358&#34;
+	srcset=&#34;https://shi1iu.github.io/p/stm32ota%E5%8D%87%E7%BA%A7%E7%AD%96%E7%95%A5%E4%B8%8E%E5%AE%9E%E7%8E%B0/assets/image-20260311171300899_hu3801145599404606997.png 480w, https://shi1iu.github.io/p/stm32ota%E5%8D%87%E7%BA%A7%E7%AD%96%E7%95%A5%E4%B8%8E%E5%AE%9E%E7%8E%B0/assets/image-20260311171300899_hu10347543784589023927.png 1024w&#34;
+	loading=&#34;lazy&#34;
+	
+		alt=&#34;image-20260311171300899&#34;
+	
+	
+		class=&#34;gallery-image&#34; 
+		data-flex-grow=&#34;120&#34;
+		data-flex-basis=&#34;289px&#34;
+	
+&gt;&lt;/p&gt;
+&lt;p&gt;此方案中，在bootloader中加载更新程序，然后加载完成后，跳转App1区域。&lt;/p&gt;
+&lt;p&gt;这种方案对比上面的方案，如果app2有误，就会导致程序没办法更新，是不妥当的。&lt;/p&gt;
+&lt;p&gt;下面介绍主要也是方案2进行实现，两种方案的实现可前往&lt;a class=&#34;link&#34; href=&#34;https://github.com/shi1iu/stm32OTAupdata&#34;  target=&#34;_blank&#34; rel=&#34;noopener&#34;
+    &gt;STM32OTA升级&lt;/a&gt;参考。&lt;/p&gt;
+&lt;h4 id=&#34;flash与ram&#34;&gt;flash与ram
+&lt;/h4&gt;&lt;p&gt;需要说明的是，如果像zynq中或者其他带有较大的ram的时候，程序的加载可能会有所不同，像zynq这种会将程序加载到ram中，这样的情况下，代码可以在运行的时候擦除和读写flash，但是在像stm32有些较小的ram的时候，会导致ram只存放数据，不存放代码的指令。&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;https://shi1iu.github.io/p/stm32ota%E5%8D%87%E7%BA%A7%E7%AD%96%E7%95%A5%E4%B8%8E%E5%AE%9E%E7%8E%B0/assets/image-20260311185847947.png&#34;
+	width=&#34;1394&#34;
+	height=&#34;969&#34;
+	srcset=&#34;https://shi1iu.github.io/p/stm32ota%E5%8D%87%E7%BA%A7%E7%AD%96%E7%95%A5%E4%B8%8E%E5%AE%9E%E7%8E%B0/assets/image-20260311185847947_hu4018989877663381082.png 480w, https://shi1iu.github.io/p/stm32ota%E5%8D%87%E7%BA%A7%E7%AD%96%E7%95%A5%E4%B8%8E%E5%AE%9E%E7%8E%B0/assets/image-20260311185847947_hu9330409343567733220.png 1024w&#34;
+	loading=&#34;lazy&#34;
+	
+		alt=&#34;image-20260311185847947&#34;
+	
+	
+		class=&#34;gallery-image&#34; 
+		data-flex-grow=&#34;143&#34;
+		data-flex-basis=&#34;345px&#34;
+	
+&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;https://shi1iu.github.io/p/stm32ota%E5%8D%87%E7%BA%A7%E7%AD%96%E7%95%A5%E4%B8%8E%E5%AE%9E%E7%8E%B0/assets/image-20260311185907237.png&#34;
+	width=&#34;1377&#34;
+	height=&#34;676&#34;
+	srcset=&#34;https://shi1iu.github.io/p/stm32ota%E5%8D%87%E7%BA%A7%E7%AD%96%E7%95%A5%E4%B8%8E%E5%AE%9E%E7%8E%B0/assets/image-20260311185907237_hu15052114873192298890.png 480w, https://shi1iu.github.io/p/stm32ota%E5%8D%87%E7%BA%A7%E7%AD%96%E7%95%A5%E4%B8%8E%E5%AE%9E%E7%8E%B0/assets/image-20260311185907237_hu11568013262416813263.png 1024w&#34;
+	loading=&#34;lazy&#34;
+	
+		alt=&#34;image-20260311185907237&#34;
+	
+	
+		class=&#34;gallery-image&#34; 
+		data-flex-grow=&#34;203&#34;
+		data-flex-basis=&#34;488px&#34;
+	
+&gt;&lt;/p&gt;
+&lt;p&gt;查看了某款stm32的.map文件，rom只列举了部分&lt;/p&gt;
+&lt;h4 id=&#34;人机交互&#34;&gt;人机交互
+&lt;/h4&gt;&lt;ol&gt;
+&lt;li&gt;需要带有命令行的形式，添加指令，以至于我们可以进行某些命令操作，例如update更新，earse进行flash擦除，reset进行重启。我使用的是letter-shell进行移植开发的，具体参考&lt;a class=&#34;link&#34; href=&#34;https://shi1iu.github.io/p/stm32%e7%a7%bb%e6%a4%8dletter-shell/&#34;  target=&#34;_blank&#34; rel=&#34;noopener&#34;
+    &gt;stm32移植letter-shell&lt;/a&gt;。&lt;/li&gt;
+&lt;li&gt;bootloader引导程序在启动后在等待期间内输入特殊指令下进入命令行模式。未在规定时间内输入特殊指令则直接进入app区。&lt;/li&gt;
+&lt;/ol&gt;
+&lt;h2 id=&#34;实现&#34;&gt;实现
+&lt;/h2&gt;&lt;p&gt;参考源码&lt;a class=&#34;link&#34; href=&#34;https://github.com/shi1iu/stm32OTAupdata&#34;  target=&#34;_blank&#34; rel=&#34;noopener&#34;
+    &gt;STM32OTA升级&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;后续ota升级部分可能需要优化，美化以及主循环中缺少状态机。&lt;/p&gt;
+</description>
+        </item>
+        
+    </channel>
+</rss>

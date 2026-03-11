@@ -1,26 +1,28 @@
 <!DOCTYPE html>
 <html lang="zh-cn" dir="ltr">
-    <head>
-	<meta name="generator" content="Hugo 0.131.0"><meta charset='utf-8'>
-<meta name='viewport' content='width=device-width, initial-scale=1'><meta name='description' content="演示说明">
-<title>shi1iu</title>
+    <head><meta charset='utf-8'>
+<meta name='viewport' content='width=device-width, initial-scale=1'><meta name='description' content="STM32 裸机 OTA升级策列">
+<title>STM32OTA升级策略与实现</title>
 
-<link rel='canonical' href='https://shi1iu.github.io/'>
+<link rel='canonical' href='https://shi1iu.github.io/p/stm32ota%E5%8D%87%E7%BA%A7%E7%AD%96%E7%95%A5%E4%B8%8E%E5%AE%9E%E7%8E%B0/'>
 
-<link rel="stylesheet" href="/scss/style.min.0304c6baf04e01a8fe70693791cb744d56a3578a3120a8796cefc66825aa39c7.css"><meta property='og:title' content="shi1iu">
-<meta property='og:description' content="演示说明">
-<meta property='og:url' content='https://shi1iu.github.io/'>
+<link rel="stylesheet" href="/scss/style.min.0304c6baf04e01a8fe70693791cb744d56a3578a3120a8796cefc66825aa39c7.css"><meta property='og:title' content="STM32OTA升级策略与实现">
+<meta property='og:description' content="STM32 裸机 OTA升级策列">
+<meta property='og:url' content='https://shi1iu.github.io/p/stm32ota%E5%8D%87%E7%BA%A7%E7%AD%96%E7%95%A5%E4%B8%8E%E5%AE%9E%E7%8E%B0/'>
 <meta property='og:site_name' content='shi1iu'>
-<meta property='og:type' content='website'><meta property='og:updated_time' content=' 2026-03-11T00:00:00&#43;00:00 '/>
-<meta name="twitter:title" content="shi1iu">
-<meta name="twitter:description" content="演示说明"><link rel="alternate" type="application/rss&#43;xml" href="https://shi1iu.github.io/index.xml">
+<meta property='og:type' content='article'><meta property='article:section' content='Post' /><meta property='article:published_time' content='2026-03-11T00:00:00&#43;00:00'/><meta property='article:modified_time' content='2026-03-11T00:00:00&#43;00:00'/><meta property='og:image' content='https://shi1iu.github.io/p/stm32ota%E5%8D%87%E7%BA%A7%E7%AD%96%E7%95%A5%E4%B8%8E%E5%AE%9E%E7%8E%B0/OTA.jpg' />
+<meta name="twitter:title" content="STM32OTA升级策略与实现">
+<meta name="twitter:description" content="STM32 裸机 OTA升级策列"><meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:image" content='https://shi1iu.github.io/p/stm32ota%E5%8D%87%E7%BA%A7%E7%AD%96%E7%95%A5%E4%B8%8E%E5%AE%9E%E7%8E%B0/OTA.jpg' />
     <link rel="shortcut icon" href="/favicon.ico" />
 
   
 
 
     </head>
-    <body class="">
+    <body class="
+    article-page
+    ">
     <script>
         (function() {
             const colorSchemeKey = 'StackColorScheme';
@@ -122,7 +124,7 @@
         
         
         
-        <li  class='current' >
+        <li >
             <a href='/' >
                 
                 
@@ -275,61 +277,10 @@
     <aside class="sidebar right-sidebar sticky">
         
             
-                <form action="/search/" class="search-form widget" >
-        <p>
-            <label>搜索</label>
-            <input name="keyword" required placeholder="输入关键词..." />
-        
-            <button title="搜索">
-                <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-search" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
-  <path stroke="none" d="M0 0h24v24H0z"/>
-  <circle cx="10" cy="10" r="7" />
-  <line x1="21" y1="21" x2="15" y2="15" />
-</svg>
-
-
-
-            </button>
-        </p>
-    </form>
-            
-        
-            
-                <section class="widget archives">
+                
+    <section class="widget archives">
         <div class="widget-icon">
-            <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-infinity" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
-  <path stroke="none" d="M0 0h24v24H0z"/>
-  <path d="M9.828 9.172a4 4 0 1 0 0 5.656 a10 10 0 0 0 2.172 -2.828a10 10 0 0 1 2.172 -2.828 a4 4 0 1 1 0 5.656a10 10 0 0 1 -2.172 -2.828a10 10 0 0 0 -2.172 -2.828" />
-</svg>
-
-
-
-        </div>
-        <h2 class="widget-title section-title">归档</h2>
-
-        
-        
-        
-        
-        
-        <div class="widget-archive--list">
-            <div class="archives-year">
-                    <a href="/archives/#2026">
-                        
-                            <span class="year">2026</span>
-                            <span class="count">5</span>
-                        
-                    </a> 
-                </div>
-            
-        </div>
-    </section>
-            
-        
-            
-                <section class="widget tagCloud">
-    <div class="widget-icon">
-        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-hash" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+            <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-hash" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
   <path stroke="none" d="M0 0h24v24H0z"/>
   <line x1="5" y1="9" x2="19" y2="9" />
   <line x1="5" y1="15" x2="19" y2="15" />
@@ -339,41 +290,29 @@
 
 
 
-    </div>
-    <h2 class="widget-title section-title">分类</h2>
-
-    <div class="tagCloud-tags">
+        </div>
+        <h2 class="widget-title section-title">目录</h2>
         
-            <a href="/categories/linux/" class="font_size_3">
-                Linux
-            </a>
-        
-            <a href="/categories/stm32/" class="font_size_2">
-                STM32
-            </a>
-        
-            <a href="/categories/%E9%A9%B1%E5%8A%A8%E5%BC%80%E5%8F%91/" class="font_size_2">
-                驱动开发
-            </a>
-        
-            <a href="/categories/letter-shell/" class="font_size_1">
-                Letter-Shell
-            </a>
-        
-            <a href="/categories/ota/" class="font_size_1">
-                OTA
-            </a>
-        
-            <a href="/categories/%E6%9D%83%E9%99%90/" class="font_size_1">
-                权限
-            </a>
-        
-            <a href="/categories/%E9%9B%B6%E6%98%9F%E9%97%AE%E9%A2%98/" class="font_size_1">
-                零星问题
-            </a>
-        
-    </div>
-</section>
+        <div class="widget--toc">
+            <nav id="TableOfContents">
+  <ol>
+    <li><a href="#stm32ota升级策略与实现">STM32OTA升级策略与实现</a>
+      <ol>
+        <li><a href="#背景">背景</a></li>
+        <li><a href="#需求">需求</a>
+          <ol>
+            <li><a href="#ota升级">OTA升级</a></li>
+            <li><a href="#flash与ram">flash与ram</a></li>
+            <li><a href="#人机交互">人机交互</a></li>
+          </ol>
+        </li>
+      </ol>
+    </li>
+    <li><a href="#实现">实现</a></li>
+  </ol>
+</nav>
+        </div>
+    </section>
 
             
         
@@ -381,15 +320,7 @@
 
 
             <main class="main full-width">
-    
-    
-    
-    
-
-    <section class="article-list">
-        
-            
-<article class="has-image">
+    <article class="has-image main-article">
     <header class="article-header">
         <div class="article-image">
             <a href="/p/stm32ota%E5%8D%87%E7%BA%A7%E7%AD%96%E7%95%A5%E4%B8%8E%E5%AE%9E%E7%8E%B0/">
@@ -459,175 +390,166 @@
 </div>
 
 </header>
+
+    <section class="article-content">
+    
+    
+    <h2 id="stm32ota升级策略与实现">STM32OTA升级策略与实现
+</h2><h3 id="背景">背景
+</h3><p>由于在业务过程中，需要对整个板子的模块供电进行一个控制、对各个芯片的温度进行上报、对芯片的boot方式进行控制，并且业务需要进行小批量的量产，可能后续需要用户进行升级此控制电源已经上报的功能，所以需要设计OTA升级方案。</p>
+<p>使用stm32f100r8t6b作为实验。</p>
+<p><img src="/p/stm32ota%E5%8D%87%E7%BA%A7%E7%AD%96%E7%95%A5%E4%B8%8E%E5%AE%9E%E7%8E%B0/assets/image-20260311170855961.png"
+	width="1196"
+	height="549"
+	srcset="/p/stm32ota%E5%8D%87%E7%BA%A7%E7%AD%96%E7%95%A5%E4%B8%8E%E5%AE%9E%E7%8E%B0/assets/image-20260311170855961_hu1800746427415126804.png 480w, /p/stm32ota%E5%8D%87%E7%BA%A7%E7%AD%96%E7%95%A5%E4%B8%8E%E5%AE%9E%E7%8E%B0/assets/image-20260311170855961_hu5217463495117478113.png 1024w"
+	loading="lazy"
+	
+		alt="image-20260311170855961"
+	
+	
+		class="gallery-image" 
+		data-flex-grow="217"
+		data-flex-basis="522px"
+	
+></p>
+<h3 id="需求">需求
+</h3><h4 id="ota升级">OTA升级
+</h4><p>这个需求是最核心的需求，我采用的是ymodem的协议，具体协议内容我没有特别仔细看。</p>
+<p>注意！stm32中代码的存放，代码段大部分放在flash（rom）中，从0x08008000开始</p>
+<p>Flash分区</p>
+<p>方案1：参考别人的 具体不记得哪里来的了</p>
+<p><img src="/p/stm32ota%E5%8D%87%E7%BA%A7%E7%AD%96%E7%95%A5%E4%B8%8E%E5%AE%9E%E7%8E%B0/assets/3.jpg"
+	width="1187"
+	height="742"
+	srcset="/p/stm32ota%E5%8D%87%E7%BA%A7%E7%AD%96%E7%95%A5%E4%B8%8E%E5%AE%9E%E7%8E%B0/assets/3_hu5158975539799435283.jpg 480w, /p/stm32ota%E5%8D%87%E7%BA%A7%E7%AD%96%E7%95%A5%E4%B8%8E%E5%AE%9E%E7%8E%B0/assets/3_hu805131633548034465.jpg 1024w"
+	loading="lazy"
+	
+		alt="3"
+	
+	
+		class="gallery-image" 
+		data-flex-grow="159"
+		data-flex-basis="383px"
+	
+></p>
+<p>此方案是BootLoader作用是如果有App2的有效数据，测将App2的区域更新到App1中，并将BootLoader跳转到App1中，如果APP2中无效，直接跳转到App1。</p>
+<p>App1的代码具有升级的功能，在app1进行升级。</p>
+<p>方案2：</p>
+<p><img src="/p/stm32ota%E5%8D%87%E7%BA%A7%E7%AD%96%E7%95%A5%E4%B8%8E%E5%AE%9E%E7%8E%B0/assets/image-20260311171300899.png"
+	width="432"
+	height="358"
+	srcset="/p/stm32ota%E5%8D%87%E7%BA%A7%E7%AD%96%E7%95%A5%E4%B8%8E%E5%AE%9E%E7%8E%B0/assets/image-20260311171300899_hu3801145599404606997.png 480w, /p/stm32ota%E5%8D%87%E7%BA%A7%E7%AD%96%E7%95%A5%E4%B8%8E%E5%AE%9E%E7%8E%B0/assets/image-20260311171300899_hu10347543784589023927.png 1024w"
+	loading="lazy"
+	
+		alt="image-20260311171300899"
+	
+	
+		class="gallery-image" 
+		data-flex-grow="120"
+		data-flex-basis="289px"
+	
+></p>
+<p>此方案中，在bootloader中加载更新程序，然后加载完成后，跳转App1区域。</p>
+<p>这种方案对比上面的方案，如果app2有误，就会导致程序没办法更新，是不妥当的。</p>
+<p>下面介绍主要也是方案2进行实现，两种方案的实现可前往<a class="link" href="https://github.com/shi1iu/stm32OTAupdata"  target="_blank" rel="noopener"
+    >STM32OTA升级</a>参考。</p>
+<h4 id="flash与ram">flash与ram
+</h4><p>需要说明的是，如果像zynq中或者其他带有较大的ram的时候，程序的加载可能会有所不同，像zynq这种会将程序加载到ram中，这样的情况下，代码可以在运行的时候擦除和读写flash，但是在像stm32有些较小的ram的时候，会导致ram只存放数据，不存放代码的指令。</p>
+<p><img src="/p/stm32ota%E5%8D%87%E7%BA%A7%E7%AD%96%E7%95%A5%E4%B8%8E%E5%AE%9E%E7%8E%B0/assets/image-20260311185847947.png"
+	width="1394"
+	height="969"
+	srcset="/p/stm32ota%E5%8D%87%E7%BA%A7%E7%AD%96%E7%95%A5%E4%B8%8E%E5%AE%9E%E7%8E%B0/assets/image-20260311185847947_hu4018989877663381082.png 480w, /p/stm32ota%E5%8D%87%E7%BA%A7%E7%AD%96%E7%95%A5%E4%B8%8E%E5%AE%9E%E7%8E%B0/assets/image-20260311185847947_hu9330409343567733220.png 1024w"
+	loading="lazy"
+	
+		alt="image-20260311185847947"
+	
+	
+		class="gallery-image" 
+		data-flex-grow="143"
+		data-flex-basis="345px"
+	
+></p>
+<p><img src="/p/stm32ota%E5%8D%87%E7%BA%A7%E7%AD%96%E7%95%A5%E4%B8%8E%E5%AE%9E%E7%8E%B0/assets/image-20260311185907237.png"
+	width="1377"
+	height="676"
+	srcset="/p/stm32ota%E5%8D%87%E7%BA%A7%E7%AD%96%E7%95%A5%E4%B8%8E%E5%AE%9E%E7%8E%B0/assets/image-20260311185907237_hu15052114873192298890.png 480w, /p/stm32ota%E5%8D%87%E7%BA%A7%E7%AD%96%E7%95%A5%E4%B8%8E%E5%AE%9E%E7%8E%B0/assets/image-20260311185907237_hu11568013262416813263.png 1024w"
+	loading="lazy"
+	
+		alt="image-20260311185907237"
+	
+	
+		class="gallery-image" 
+		data-flex-grow="203"
+		data-flex-basis="488px"
+	
+></p>
+<p>查看了某款stm32的.map文件，rom只列举了部分</p>
+<h4 id="人机交互">人机交互
+</h4><ol>
+<li>需要带有命令行的形式，添加指令，以至于我们可以进行某些命令操作，例如update更新，earse进行flash擦除，reset进行重启。我使用的是letter-shell进行移植开发的，具体参考<a class="link" href="https://shi1iu.github.io/p/stm32%e7%a7%bb%e6%a4%8dletter-shell/"  target="_blank" rel="noopener"
+    >stm32移植letter-shell</a>。</li>
+<li>bootloader引导程序在启动后在等待期间内输入特殊指令下进入命令行模式。未在规定时间内输入特殊指令则直接进入app区。</li>
+</ol>
+<h2 id="实现">实现
+</h2><p>参考源码<a class="link" href="https://github.com/shi1iu/stm32OTAupdata"  target="_blank" rel="noopener"
+    >STM32OTA升级</a></p>
+<p>后续ota升级部分可能需要优化，美化以及主循环中缺少状态机。</p>
+
+</section>
+
+
+    <footer class="article-footer">
+    
+
+    </footer>
+
+
+    
 </article>
-        
+
+    
+
+    
+
+<aside class="related-content--wrapper">
+    <h2 class="section-title">相关文章</h2>
+    <div class="related-content">
+        <div class="flex article-list--tile">
             
-<article class="has-image">
-    <header class="article-header">
-        <div class="article-image">
-            <a href="/p/stm32%E7%A7%BB%E6%A4%8Dletter-shell/">
-                <img src="/p/stm32%E7%A7%BB%E6%A4%8Dletter-shell/letter-shell_hu16160538137312428093.jpg"
-                        srcset="/p/stm32%E7%A7%BB%E6%A4%8Dletter-shell/letter-shell_hu16160538137312428093.jpg 800w, /p/stm32%E7%A7%BB%E6%A4%8Dletter-shell/letter-shell_hu14782633461496756808.jpg 1600w"
-                        width="800" 
-                        height="1067" 
-                        loading="lazy"
-                        alt="Featured image of post stm32移植letter-shell" />
                 
-            </a>
-        </div>
-    
-
-    <div class="article-details">
-    
-    <header class="article-category">
+<article class="has-image">
+    <a href="/p/stm32%E7%A7%BB%E6%A4%8Dletter-shell/">
         
-            <a href="/categories/stm32/" >
-                STM32
-            </a>
         
-            <a href="/categories/letter-shell/" >
-                Letter-Shell
-            </a>
-        
-    </header>
-    
-
-    <div class="article-title-wrapper">
-        <h2 class="article-title">
-            <a href="/p/stm32%E7%A7%BB%E6%A4%8Dletter-shell/">stm32移植letter-shell</a>
-        </h2>
-    
-        
-        <h3 class="article-subtitle">
-            STM32裸机实现letter-shell，无操作系统和RTOS
-        </h3>
-        
-    </div>
-
-    
-    
-    
-    
-    <footer class="article-time">
-        
-            <div>
-                <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-calendar-time" width="56" height="56" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
-  <path stroke="none" d="M0 0h24v24H0z"/>
-  <path d="M11.795 21h-6.795a2 2 0 0 1 -2 -2v-12a2 2 0 0 1 2 -2h12a2 2 0 0 1 2 2v4" />
-  <circle cx="18" cy="18" r="4" />
-  <path d="M15 3v4" />
-  <path d="M7 3v4" />
-  <path d="M3 11h16" />
-  <path d="M18 16.496v1.504l1 1" />
-</svg>
-                <time class="article-time--published">2026-03-11</time>
+            <div class="article-image">
+                <img src="/p/stm32%E7%A7%BB%E6%A4%8Dletter-shell/letter-shell.18349edb22f70853d3c68ed1f59c1cc5_hu11864763699184886245.jpg" 
+                        width="250" 
+                        height="150" 
+                        loading="lazy"
+                        alt="Featured image of post stm32移植letter-shell"
+                        
+                        data-hash="md5-GDSe2yL3CFPTxo7R9ZwcxQ==">
+                
             </div>
         
 
-        
-    </footer>
-    
-
-    
-</div>
-
-</header>
-</article>
-        
-            
-<article class="has-image">
-    <header class="article-header">
-        <div class="article-image">
-            <a href="/p/%E5%8A%A0%E8%BD%BD%E5%86%85%E6%A0%B8%E7%89%88%E6%9C%AC%E4%B8%8D%E4%B8%80%E8%87%B4%E6%8A%A5%E9%94%99/">
-                <img src="/p/%E5%8A%A0%E8%BD%BD%E5%86%85%E6%A0%B8%E7%89%88%E6%9C%AC%E4%B8%8D%E4%B8%80%E8%87%B4%E6%8A%A5%E9%94%99/fengjing_hu2472329769747176442.jpg"
-                        srcset="/p/%E5%8A%A0%E8%BD%BD%E5%86%85%E6%A0%B8%E7%89%88%E6%9C%AC%E4%B8%8D%E4%B8%80%E8%87%B4%E6%8A%A5%E9%94%99/fengjing_hu2472329769747176442.jpg 800w, /p/%E5%8A%A0%E8%BD%BD%E5%86%85%E6%A0%B8%E7%89%88%E6%9C%AC%E4%B8%8D%E4%B8%80%E8%87%B4%E6%8A%A5%E9%94%99/fengjing_hu6354915972096022975.jpg 1600w"
-                        width="800" 
-                        height="1202" 
-                        loading="lazy"
-                        alt="Featured image of post 加载内核版本不一致报错" />
-                
-            </a>
+        <div class="article-details">
+            <h2 class="article-title">stm32移植letter-shell</h2>
         </div>
-    
-
-    <div class="article-details">
-    
-    <header class="article-category">
-        
-            <a href="/categories/linux/" >
-                Linux
-            </a>
-        
-            <a href="/categories/%E9%A9%B1%E5%8A%A8%E5%BC%80%E5%8F%91/" >
-                驱动开发
-            </a>
-        
-            <a href="/categories/%E9%9B%B6%E6%98%9F%E9%97%AE%E9%A2%98/" >
-                零星问题
-            </a>
-        
-    </header>
-    
-
-    <div class="article-title-wrapper">
-        <h2 class="article-title">
-            <a href="/p/%E5%8A%A0%E8%BD%BD%E5%86%85%E6%A0%B8%E7%89%88%E6%9C%AC%E4%B8%8D%E4%B8%80%E8%87%B4%E6%8A%A5%E9%94%99/">加载内核版本不一致报错</a>
-        </h2>
-    
-        
-        <h3 class="article-subtitle">
-            内核版本不一致导致模块加载失败
-        </h3>
-        
-    </div>
-
-    
-    
-    
-    
-    <footer class="article-time">
-        
-            <div>
-                <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-calendar-time" width="56" height="56" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
-  <path stroke="none" d="M0 0h24v24H0z"/>
-  <path d="M11.795 21h-6.795a2 2 0 0 1 -2 -2v-12a2 2 0 0 1 2 -2h12a2 2 0 0 1 2 2v4" />
-  <circle cx="18" cy="18" r="4" />
-  <path d="M15 3v4" />
-  <path d="M7 3v4" />
-  <path d="M3 11h16" />
-  <path d="M18 16.496v1.504l1 1" />
-</svg>
-                <time class="article-time--published">2026-03-06</time>
-            </div>
-        
-
-        
-    </footer>
-    
-
-    
-</div>
-
-</header>
+    </a>
 </article>
-        
-    </section>
-    <nav class='pagination'>
-        
-        
 
-        
             
-                <span class='page-link current'>1</span>
-                
-            
-            
-                    <a class='page-link' href='/page/2/'>2</a>
-                
-            
-    </nav>
+        </div>
+    </div>
+</aside>
 
-<footer class="site-footer">
+     
+    
+        
+    
+
+    <footer class="site-footer">
     <section class="copyright">
         &copy; 
         
@@ -641,6 +563,85 @@
         主题 <b><a href="https://github.com/CaiJimmy/hugo-theme-stack" target="_blank" rel="noopener" data-version="3.26.0">Stack</a></b> 由 <a href="https://jimmycai.com" target="_blank" rel="noopener">Jimmy</a> 设计
     </section>
 </footer>
+
+
+    
+<div class="pswp" tabindex="-1" role="dialog" aria-hidden="true">
+
+    
+    <div class="pswp__bg"></div>
+
+    
+    <div class="pswp__scroll-wrap">
+
+        
+        <div class="pswp__container">
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+        </div>
+
+        
+        <div class="pswp__ui pswp__ui--hidden">
+
+            <div class="pswp__top-bar">
+
+                
+
+                <div class="pswp__counter"></div>
+
+                <button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+
+                <button class="pswp__button pswp__button--share" title="Share"></button>
+
+                <button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+
+                <button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
+
+                
+                
+                <div class="pswp__preloader">
+                    <div class="pswp__preloader__icn">
+                        <div class="pswp__preloader__cut">
+                            <div class="pswp__preloader__donut"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
+                <div class="pswp__share-tooltip"></div>
+            </div>
+
+            <button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+            </button>
+
+            <button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)">
+            </button>
+
+            <div class="pswp__caption">
+                <div class="pswp__caption__center"></div>
+            </div>
+
+        </div>
+
+    </div>
+
+</div><script 
+                src="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.js"integrity="sha256-ePwmChbbvXbsO02lbM3HoHbSHTHFAeChekF1xKJdleo="crossorigin="anonymous"
+                defer
+                >
+            </script><script 
+                src="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe-ui-default.min.js"integrity="sha256-UKkzOn/w1mBxRmLLGrSeyB4e1xbrp4xylgAWb3M42pU="crossorigin="anonymous"
+                defer
+                >
+            </script><link 
+                rel="stylesheet" 
+                href="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/default-skin/default-skin.min.css"crossorigin="anonymous"
+            ><link 
+                rel="stylesheet" 
+                href="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.css"crossorigin="anonymous"
+            >
 
             </main>
         </div>
