@@ -19,6 +19,8 @@
   
 
 
+  <link rel="stylesheet" href="/css/chroma.min.css">
+
     </head>
     <body class="
     article-page
@@ -451,7 +453,7 @@
 ></p>
 <p>此方案中，在bootloader中加载更新程序，然后加载完成后，跳转App1区域。</p>
 <p>这种方案对比上面的方案，如果app2有误，就会导致程序没办法更新，是不妥当的。</p>
-<p>下面介绍主要也是方案2进行实现，两种方案的实现可前往<a class="link" href="https://github.com/shi1iu/stm32OTAupdata"  target="_blank" rel="noopener"
+<p>下面介绍主要也是方案2进行实现，两种方案的实现可前往<a class="link" href="https://github.com/shi1iu/stm32OTAupdate"  target="_blank" rel="noopener"
     >STM32OTA升级</a>参考。</p>
 <h4 id="flash与ram">flash与ram
 </h4><p>需要说明的是，如果像zynq中或者其他带有较大的ram的时候，程序的加载可能会有所不同，像zynq这种会将程序加载到ram中，这样的情况下，代码可以在运行的时候擦除和读写flash，但是在像stm32有些较小的ram的时候，会导致ram只存放数据，不存放代码的指令。</p>
@@ -491,7 +493,7 @@
 <li>bootloader引导程序在启动后在等待期间内输入特殊指令下进入命令行模式。未在规定时间内输入特殊指令则直接进入app区。</li>
 </ol>
 <h2 id="实现">实现
-</h2><p>参考源码<a class="link" href="https://github.com/shi1iu/stm32OTAupdata"  target="_blank" rel="noopener"
+</h2><p>参考源码<a class="link" href="https://github.com/shi1iu/stm32OTAupdate"  target="_blank" rel="noopener"
     >STM32OTA升级</a></p>
 <p>后续ota升级部分可能需要优化，美化以及主循环中缺少状态机。</p>
 

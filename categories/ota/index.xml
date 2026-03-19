@@ -70,7 +70,7 @@
 &gt;&lt;/p&gt;
 &lt;p&gt;此方案中，在bootloader中加载更新程序，然后加载完成后，跳转App1区域。&lt;/p&gt;
 &lt;p&gt;这种方案对比上面的方案，如果app2有误，就会导致程序没办法更新，是不妥当的。&lt;/p&gt;
-&lt;p&gt;下面介绍主要也是方案2进行实现，两种方案的实现可前往&lt;a class=&#34;link&#34; href=&#34;https://github.com/shi1iu/stm32OTAupdata&#34;  target=&#34;_blank&#34; rel=&#34;noopener&#34;
+&lt;p&gt;下面介绍主要也是方案2进行实现，两种方案的实现可前往&lt;a class=&#34;link&#34; href=&#34;https://github.com/shi1iu/stm32OTAupdate&#34;  target=&#34;_blank&#34; rel=&#34;noopener&#34;
     &gt;STM32OTA升级&lt;/a&gt;参考。&lt;/p&gt;
 &lt;h4 id=&#34;flash与ram&#34;&gt;flash与ram
 &lt;/h4&gt;&lt;p&gt;需要说明的是，如果像zynq中或者其他带有较大的ram的时候，程序的加载可能会有所不同，像zynq这种会将程序加载到ram中，这样的情况下，代码可以在运行的时候擦除和读写flash，但是在像stm32有些较小的ram的时候，会导致ram只存放数据，不存放代码的指令。&lt;/p&gt;
@@ -110,7 +110,7 @@
 &lt;li&gt;bootloader引导程序在启动后在等待期间内输入特殊指令下进入命令行模式。未在规定时间内输入特殊指令则直接进入app区。&lt;/li&gt;
 &lt;/ol&gt;
 &lt;h2 id=&#34;实现&#34;&gt;实现
-&lt;/h2&gt;&lt;p&gt;参考源码&lt;a class=&#34;link&#34; href=&#34;https://github.com/shi1iu/stm32OTAupdata&#34;  target=&#34;_blank&#34; rel=&#34;noopener&#34;
+&lt;/h2&gt;&lt;p&gt;参考源码&lt;a class=&#34;link&#34; href=&#34;https://github.com/shi1iu/stm32OTAupdate&#34;  target=&#34;_blank&#34; rel=&#34;noopener&#34;
     &gt;STM32OTA升级&lt;/a&gt;&lt;/p&gt;
 &lt;p&gt;后续ota升级部分可能需要优化，美化以及主循环中缺少状态机。&lt;/p&gt;
 </description>

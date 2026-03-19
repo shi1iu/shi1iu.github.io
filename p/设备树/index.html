@@ -19,6 +19,8 @@
   
 
 
+  <link rel="stylesheet" href="/css/chroma.min.css">
+
     </head>
     <body class="
     article-page
@@ -463,100 +465,43 @@
 <p>4.它也可能是空，如⑦</p>
 <h3 id="典型节点">典型节点
 </h3><h4 id="chosen-node">chosen node
-</h4><div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span><span class="lnt">2
-</span><span class="lnt">3
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">chosen {
-</span></span><span class="line"><span class="cl">	bootargs = &#34;tegraid=40.0.0.00.00 vmalloc=256M video=tegrafb console=ttyS0,115200n8 earlyprintk&#34;;
-</span></span><span class="line"><span class="cl">};
-</span></span></code></pre></td></tr></table>
-</div>
-</div><p>chosen node 主要用来描述由系统指定的runtime parameter，它并没有描述任何硬件设备节点信息。原先通过tag list传递的一些linux kernel运行的参数，可以通过chosen节点来传递。如command line可以通过bootargs这个property来传递。如果存在chosen node，它的parent节点必须为“/”根节点。（本示例都以imx6ull的硬件环境下讲解）</p>
+</h4><pre tabindex="0"><code class="language-dts" data-lang="dts">chosen {
+	bootargs = &#34;tegraid=40.0.0.00.00 vmalloc=256M video=tegrafb console=ttyS0,115200n8 earlyprintk&#34;;
+};
+</code></pre><p>chosen node 主要用来描述由系统指定的runtime parameter，它并没有描述任何硬件设备节点信息。原先通过tag list传递的一些linux kernel运行的参数，可以通过chosen节点来传递。如command line可以通过bootargs这个property来传递。如果存在chosen node，它的parent节点必须为“/”根节点。（本示例都以imx6ull的硬件环境下讲解）</p>
 <h4 id="aliases-node">aliases node
-</h4><div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span><span class="lnt">2
-</span><span class="lnt">3
-</span><span class="lnt">4
-</span><span class="lnt">5
-</span><span class="lnt">6
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">aliases {
-</span></span><span class="line"><span class="cl">	i2c6 = &amp;pca9546_i2c0;
-</span></span><span class="line"><span class="cl">	i2c7 = &amp;pca9546_i2c1;
-</span></span><span class="line"><span class="cl">	i2c8 = &amp;pca9546_i2c2;
-</span></span><span class="line"><span class="cl">	i2c9 = &amp;pca9546_i2c3;
-</span></span><span class="line"><span class="cl">};
-</span></span></code></pre></td></tr></table>
-</div>
-</div><p>aliases node用来定义别名，类似C++中引用。上面是一个在.dtsi中的典型应用，当使用i2c6时，也即使用pca9546_i2c0，使得引用节点变得简单方便。例：当.dts include 该.dtsi时，将i2c6的status属性赋值为okay，则表明该主板上的pca9546_i2c0处于enable状态；反之，status赋值为disabled，则表明该主板上的pca9546_i2c0处于disenable状态。</p>
+</h4><pre tabindex="0"><code class="language-dts" data-lang="dts">aliases {
+	i2c6 = &amp;pca9546_i2c0;
+	i2c7 = &amp;pca9546_i2c1;
+	i2c8 = &amp;pca9546_i2c2;
+	i2c9 = &amp;pca9546_i2c3;
+};
+</code></pre><p>aliases node用来定义别名，类似C++中引用。上面是一个在.dtsi中的典型应用，当使用i2c6时，也即使用pca9546_i2c0，使得引用节点变得简单方便。例：当.dts include 该.dtsi时，将i2c6的status属性赋值为okay，则表明该主板上的pca9546_i2c0处于enable状态；反之，status赋值为disabled，则表明该主板上的pca9546_i2c0处于disenable状态。</p>
 <h4 id="memory-node">memory node
-</h4><div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span><span class="lnt">2
-</span><span class="lnt">3
-</span><span class="lnt">4
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">memory {
-</span></span><span class="line"><span class="cl">device_type = &#34;memory&#34;;
-</span></span><span class="line"><span class="cl">reg = &lt;0x00000000 0x20000000&gt;; /* 512 MB */
-</span></span><span class="line"><span class="cl">};
-</span></span></code></pre></td></tr></table>
-</div>
-</div><p>对于memory node，device_type必须为memory，由之前的描述可以知道该memory node是以0x00000000为起始地址，以0x20000000为结束地址的512MB的空间。</p>
+</h4><pre tabindex="0"><code class="language-dts" data-lang="dts">memory {
+device_type = &#34;memory&#34;;
+reg = &lt;0x00000000 0x20000000&gt;; /* 512 MB */
+};
+</code></pre><p>对于memory node，device_type必须为memory，由之前的描述可以知道该memory node是以0x00000000为起始地址，以0x20000000为结束地址的512MB的空间。</p>
 <p>一般而言，在.dts中不对memory进行描述，而是通过bootargs中类似521M@0x00000000的方式传递给内核。</p>
 <h3 id="设备树中的引用">设备树中的引用
 </h3><p>示例</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
-</span><span class="lnt"> 2
-</span><span class="lnt"> 3
-</span><span class="lnt"> 4
-</span><span class="lnt"> 5
-</span><span class="lnt"> 6
-</span><span class="lnt"> 7
-</span><span class="lnt"> 8
-</span><span class="lnt"> 9
-</span><span class="lnt">10
-</span><span class="lnt">11
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">/ {
-</span></span><span class="line"><span class="cl">    uart1: serial@02020000 {
-</span></span><span class="line"><span class="cl">        compatible = &#34;fsl,imx6ul-uart&#34;;
-</span></span><span class="line"><span class="cl">        reg = &lt;0x02020000 0x4000&gt;;
-</span></span><span class="line"><span class="cl">        status = &#34;disabled&#34;;
-</span></span><span class="line"><span class="cl">    };
-</span></span><span class="line"><span class="cl">};
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl">&amp;uart1 {
-</span></span><span class="line"><span class="cl">    status = &#34;okay&#34;;
-</span></span><span class="line"><span class="cl">};
-</span></span></code></pre></td></tr></table>
-</div>
-</div><p>标签格式：</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span><span class="lnt">2
-</span><span class="lnt">3
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">标签: 节点名@地址 {
-</span></span><span class="line"><span class="cl">    // 节点内容
-</span></span><span class="line"><span class="cl">};
-</span></span></code></pre></td></tr></table>
-</div>
-</div><p>编译后，<code>uart1</code> 节点最终会包含 <code>status = &quot;okay&quot;</code>，但标签 <code>uart1:</code> 和引用 <code>&amp;uart1</code> 都会消失。</p>
+<pre tabindex="0"><code class="language-dts" data-lang="dts">/ {
+    uart1: serial@02020000 {
+        compatible = &#34;fsl,imx6ul-uart&#34;;
+        reg = &lt;0x02020000 0x4000&gt;;
+        status = &#34;disabled&#34;;
+    };
+};
+
+&amp;uart1 {
+    status = &#34;okay&#34;;
+};
+</code></pre><p>标签格式：</p>
+<pre tabindex="0"><code class="language-dts" data-lang="dts">标签: 节点名@地址 {
+    // 节点内容
+};
+</code></pre><p>编译后，<code>uart1</code> 节点最终会包含 <code>status = &quot;okay&quot;</code>，但标签 <code>uart1:</code> 和引用 <code>&amp;uart1</code> 都会消失。</p>
 <p>在板子的 <code>/proc/device-tree/</code> 下，你会看到目录 <code>/serial@02020000/</code>（或者 <code>/soc/serial@02020000/</code>，取决于具体路径），里面有一个 <code>status</code> 文件，内容为 <code>&quot;okay&quot;</code>。</p>
 <p><strong>没有任何名为 <code>&amp;uart1</code> 或 <code>uart1</code> 的文件或目录存在</strong>。</p>
 <p><strong><code>&amp;xxxx</code> 是设备树源文件（<code>.dts</code>）中的语法</strong>，它用于引用一个预先定义的<strong>标签（label）</strong>，目的是将后续的属性或子节点合并到那个标签所代表的节点中。这相当于一种“粘合剂”，方便在多个地方修改同一个节点。</p>
@@ -572,31 +517,16 @@
 </h3><h4 id="获取设备节点">获取设备节点
 </h4><p><code>dtsled.nd = of_find_node_by_path(&quot;/alphaled&quot;);</code></p>
 <p>eg：</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span><span class="lnt">2
-</span><span class="lnt">3
-</span><span class="lnt">4
-</span><span class="lnt">5
-</span><span class="lnt">6
-</span><span class="lnt">7
-</span><span class="lnt">8
-</span><span class="lnt">9
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl"> /* 获取设备树中的属性数据 */ 
-</span></span><span class="line"><span class="cl">     /* 1、获取设备节点：alphaled */ 
-</span></span><span class="line"><span class="cl">     dtsled.nd = of_find_node_by_path(&#34;/alphaled&#34;); 
-</span></span><span class="line"><span class="cl">     if(dtsled.nd == NULL) { 
-</span></span><span class="line"><span class="cl">         printk(&#34;alphaled node can not found!\r\n&#34;); 
-</span></span><span class="line"><span class="cl">         return -EINVAL; 
-</span></span><span class="line"><span class="cl">     } else { 
-</span></span><span class="line"><span class="cl">         printk(&#34;alphaled node has been found!\r\n&#34;); 
-</span></span><span class="line"><span class="cl">     }
-</span></span></code></pre></td></tr></table>
-</div>
-</div><p>驱动与设备树节点绑定的“信物”是 <code>compatible</code> 属性。</p>
+<pre tabindex="0"><code class="language-dts" data-lang="dts"> /* 获取设备树中的属性数据 */ 
+     /* 1、获取设备节点：alphaled */ 
+     dtsled.nd = of_find_node_by_path(&#34;/alphaled&#34;); 
+     if(dtsled.nd == NULL) { 
+         printk(&#34;alphaled node can not found!\r\n&#34;); 
+         return -EINVAL; 
+     } else { 
+         printk(&#34;alphaled node has been found!\r\n&#34;); 
+     }
+</code></pre><p>驱动与设备树节点绑定的“信物”是 <code>compatible</code> 属性。</p>
 <h4 id="获取资源核心-of-操作函数">获取资源——核心 OF 操作函数
 </h4><p>一旦进入 <code>probe</code> 函数，驱动就可以通过设备节点指针（通常是 <code>struct device_node *np = pdev-&gt;dev.of_node;</code>）来提取所需的硬件信息了。以下是一些最常用的操作函数：</p>
 <div class="table-wrapper"><table>

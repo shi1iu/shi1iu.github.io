@@ -19,6 +19,8 @@
   
 
 
+  <link rel="stylesheet" href="/css/chroma.min.css">
+
     </head>
     <body class="
     article-page
@@ -426,8 +428,8 @@
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl"><span class="n">git</span> <span class="n">clone</span> <span class="nl">https</span><span class="p">:</span><span class="c1">//github.com/NevermindZZT/letter-shell.git
-</span></span></span></code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">git clone https://github.com/NevermindZZT/letter-shell.git
+</span></span></code></pre></td></tr></table>
 </div>
 </div><p>下载后需要的源码</p>
 <p><img src="/p/stm32%E7%A7%BB%E6%A4%8Dletter-shell/assets/image-20260311162720917.png"
@@ -546,11 +548,11 @@
 </span><span class="lnt">72
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl"><span class="cm">/* 这个对比源文件修改即可 */</span>
+<pre tabindex="0" class="chroma"><code class="language-cpp" data-lang="cpp"><span class="line"><span class="cl"><span class="cm">/* 这个对比源文件修改即可 */</span>
 </span></span><span class="line"><span class="cl">
 </span></span><span class="line"><span class="cl"><span class="cp">#include</span> <span class="cpf">&#34;shell.h&#34;</span><span class="cp">
-</span></span></span><span class="line"><span class="cl"><span class="cp">#include</span> <span class="cpf">&#34;usart.h&#34;//根据情节我这里是hal库包含在main.h了</span><span class="cp">
-</span></span></span><span class="line"><span class="cl"><span class="cp">#include</span> <span class="cpf">&#34;main.h&#34;</span><span class="cp">
+</span></span></span><span class="line"><span class="cl"><span class="cp">#include</span> <span class="cpf">&#34;usart.h&#34;</span><span class="c1">//根据情节我这里是hal库包含在main.h了
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="cp">#include</span> <span class="cpf">&#34;main.h&#34;</span><span class="cp">
 </span></span></span><span class="line"><span class="cl"><span class="cp"></span>
 </span></span><span class="line"><span class="cl"><span class="k">extern</span> <span class="n">UART_HandleTypeDef</span> <span class="n">huart1</span><span class="p">;</span> <span class="c1">//用哪个串口就改成哪一个
 </span></span></span><span class="line"><span class="cl"><span class="c1"></span>
@@ -567,7 +569,7 @@
 </span></span></span><span class="line"><span class="cl"><span class="cm"> */</span>
 </span></span><span class="line"><span class="cl"><span class="kt">short</span> <span class="nf">userShellWrite</span><span class="p">(</span><span class="kt">char</span> <span class="o">*</span><span class="n">data</span><span class="p">,</span> <span class="kt">unsigned</span> <span class="kt">short</span> <span class="n">len</span><span class="p">)</span>
 </span></span><span class="line"><span class="cl"><span class="p">{</span>
-</span></span><span class="line"><span class="cl">    <span class="nf">HAL_UART_Transmit</span><span class="p">(</span><span class="o">&amp;</span><span class="n">huart1</span><span class="p">,(</span><span class="kt">uint8_t</span><span class="o">*</span><span class="p">)</span><span class="n">data</span><span class="p">,</span><span class="n">len</span><span class="p">,</span><span class="mi">1000</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="n">HAL_UART_Transmit</span><span class="p">(</span><span class="o">&amp;</span><span class="n">huart1</span><span class="p">,(</span><span class="kt">uint8_t</span><span class="o">*</span><span class="p">)</span><span class="n">data</span><span class="p">,</span><span class="n">len</span><span class="p">,</span><span class="mi">1000</span><span class="p">);</span>
 </span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="n">len</span><span class="p">;</span>
 </span></span><span class="line"><span class="cl"><span class="p">}</span>
 </span></span><span class="line"><span class="cl">
@@ -616,7 +618,7 @@
 </span></span><span class="line"><span class="cl"><span class="kt">void</span> <span class="nf">userShellInit</span><span class="p">(</span><span class="kt">void</span><span class="p">)</span>
 </span></span><span class="line"><span class="cl"><span class="p">{</span>
 </span></span><span class="line"><span class="cl">    <span class="n">shell</span><span class="p">.</span><span class="n">write</span> <span class="o">=</span> <span class="n">userShellWrite</span><span class="p">;</span>
-</span></span><span class="line"><span class="cl">    <span class="nf">shellInit</span><span class="p">(</span><span class="o">&amp;</span><span class="n">shell</span><span class="p">,</span> <span class="n">shellBuffer</span><span class="p">,</span> <span class="mi">512</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="n">shellInit</span><span class="p">(</span><span class="o">&amp;</span><span class="n">shell</span><span class="p">,</span> <span class="n">shellBuffer</span><span class="p">,</span> <span class="mi">512</span><span class="p">);</span>
 </span></span><span class="line"><span class="cl"><span class="p">}</span>
 </span></span></code></pre></td></tr></table>
 </div>
@@ -643,7 +645,7 @@
 </span><span class="lnt">18
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl"><span class="cp">#ifndef SHELL_TASK_WHILE
+<pre tabindex="0" class="chroma"><code class="language-cpp" data-lang="cpp"><span class="line"><span class="cl"><span class="cp">#ifndef SHELL_TASK_WHILE
 </span></span></span><span class="line"><span class="cl"><span class="cp"></span><span class="cm">/**
 </span></span></span><span class="line"><span class="cl"><span class="cm"> * @brief 是否使用默认shell任务while循环
 </span></span></span><span class="line"><span class="cl"><span class="cm"> *        使能此宏，则`shellTask()`函数会一直循环读取输入，一般使用操作系统建立shell
