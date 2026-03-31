@@ -1,0 +1,959 @@
+<!DOCTYPE html>
+<html lang="zh-cn" dir="ltr">
+    <head><meta charset='utf-8'>
+<meta name='viewport' content='width=device-width, initial-scale=1'><meta name='description' content="设备树overlay相关的知识学习">
+<title></title>
+
+<link rel='canonical' href='https://shi1iu.github.io/p/'>
+
+<link rel="stylesheet" href="/scss/style.min.0304c6baf04e01a8fe70693791cb744d56a3578a3120a8796cefc66825aa39c7.css"><meta property='og:title' content="">
+<meta property='og:description' content="设备树overlay相关的知识学习">
+<meta property='og:url' content='https://shi1iu.github.io/p/'>
+<meta property='og:site_name' content='shi1iu'>
+<meta property='og:type' content='article'><meta property='article:section' content='Post' /><meta property='article:published_time' content='2026-03-31T00:00:00&#43;00:00'/><meta property='article:modified_time' content='2026-03-31T00:00:00&#43;00:00'/><meta property='og:image' content='https://shi1iu.github.io/p/rixi.jpg' />
+<meta name="twitter:title" content="">
+<meta name="twitter:description" content="设备树overlay相关的知识学习"><meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:image" content='https://shi1iu.github.io/p/rixi.jpg' />
+    <link rel="shortcut icon" href="/favicon.ico" />
+
+  
+
+
+  <link rel="stylesheet" href="/css/chroma.min.css">
+
+    </head>
+    <body class="
+    article-page
+    ">
+    <script>
+        (function() {
+            const colorSchemeKey = 'StackColorScheme';
+            if(!localStorage.getItem(colorSchemeKey)){
+                localStorage.setItem(colorSchemeKey, "auto");
+            }
+        })();
+    </script><script>
+    (function() {
+        const colorSchemeKey = 'StackColorScheme';
+        const colorSchemeItem = localStorage.getItem(colorSchemeKey);
+        const supportDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches === true;
+
+        if (colorSchemeItem == 'dark' || colorSchemeItem === 'auto' && supportDarkMode) {
+            
+
+            document.documentElement.dataset.scheme = 'dark';
+        } else {
+            document.documentElement.dataset.scheme = 'light';
+        }
+    })();
+</script>
+<div class="container main-container flex on-phone--column extended"><aside class="sidebar left-sidebar sticky ">
+    <button class="hamburger hamburger--spin" type="button" id="toggle-menu" aria-label="切换菜单">
+        <span class="hamburger-box">
+            <span class="hamburger-inner"></span>
+        </span>
+    </button>
+
+    <header>
+        
+            
+            <figure class="site-avatar">
+                <a href="/">
+                
+                    
+                    
+                    
+                        
+                        <img src="/img/avatar_hu17971763332595127852.png" width="300"
+                            height="300" class="site-logo" loading="lazy" alt="Avatar">
+                    
+                
+                </a>
+                
+                    <span class="emoji">🍥</span>
+                
+            </figure>
+            
+        
+        
+        <div class="site-meta">
+            <h1 class="site-name"><a href="/">shi1iu</a></h1>
+            <h2 class="site-description">分享学习嵌入式Linux、MCU、RTOS、驱动开发、C/C&#43;&#43;等笔记与项目经验</h2>
+        </div>
+    </header><ol class="menu-social">
+            
+                <li>
+                    <a 
+                        href='https://github.com/shi1iu'
+                        target="_blank"
+                        title="GitHub"
+                        rel="me"
+                    >
+                        
+                        
+                            <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-brand-github" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+  <path d="M9 19c-4.3 1.4 -4.3 -2.5 -6 -3m12 5v-3.5c0 -1 .1 -1.4 -.5 -2c2.8 -.3 5.5 -1.4 5.5 -6a4.6 4.6 0 0 0 -1.3 -3.2a4.2 4.2 0 0 0 -.1 -3.2s-1.1 -.3 -3.5 1.3a12.3 12.3 0 0 0 -6.2 0c-2.4 -1.6 -3.5 -1.3 -3.5 -1.3a4.2 4.2 0 0 0 -.1 3.2a4.6 4.6 0 0 0 -1.3 3.2c0 4.6 2.7 5.7 5.5 6c-.6 .6 -.6 1.2 -.5 2v3.5" />
+</svg>
+
+
+
+                        
+                    </a>
+                </li>
+            
+                <li>
+                    <a 
+                        href='https://twitter.com'
+                        target="_blank"
+                        title="Twitter"
+                        rel="me"
+                    >
+                        
+                        
+                            <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-brand-twitter" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+  <path d="M22 4.01c-1 .49 -1.98 .689 -3 .99c-1.121 -1.265 -2.783 -1.335 -4.38 -.737s-2.643 2.06 -2.62 3.737v1c-3.245 .083 -6.135 -1.395 -8 -4c0 0 -4.182 7.433 4 11c-1.872 1.247 -3.739 2.088 -6 2c3.308 1.803 6.913 2.423 10.034 1.517c3.58 -1.04 6.522 -3.723 7.651 -7.742a13.84 13.84 0 0 0 .497 -3.753c-.002 -.249 1.51 -2.772 1.818 -4.013z" />
+</svg>
+
+
+
+                        
+                    </a>
+                </li>
+            
+        </ol><ol class="menu" id="main-menu">
+        
+        
+        
+        <li >
+            <a href='/' >
+                
+                
+                
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-home" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <polyline points="5 12 3 12 12 3 21 12 19 12" />
+  <path d="M5 12v7a2 2 0 0 0 2 2h10a2 2 0 0 0 2 -2v-7" />
+  <path d="M9 21v-6a2 2 0 0 1 2 -2h2a2 2 0 0 1 2 2v6" />
+</svg>
+
+
+
+                
+                <span>主页</span>
+            </a>
+        </li>
+        
+        
+        <li >
+            <a href='/%E5%85%B3%E4%BA%8E/' >
+                
+                
+                
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-user" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="12" cy="7" r="4" />
+  <path d="M6 21v-2a4 4 0 0 1 4 -4h4a4 4 0 0 1 4 4v2" />
+</svg>
+
+
+
+                
+                <span>关于</span>
+            </a>
+        </li>
+        
+        
+        <li >
+            <a href='/archives/' >
+                
+                
+                
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-archive" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <rect x="3" y="4" width="18" height="4" rx="2" />
+  <path d="M5 8v10a2 2 0 0 0 2 2h10a2 2 0 0 0 2 -2v-10" />
+  <line x1="10" y1="12" x2="14" y2="12" />
+</svg>
+
+
+
+                
+                <span>归档</span>
+            </a>
+        </li>
+        
+        
+        <li >
+            <a href='/search/' >
+                
+                
+                
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-search" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="10" cy="10" r="7" />
+  <line x1="21" y1="21" x2="15" y2="15" />
+</svg>
+
+
+
+                
+                <span>搜索</span>
+            </a>
+        </li>
+        
+        
+        <li >
+            <a href='/%E5%8F%8B%E6%83%85%E9%93%BE%E6%8E%A5/' >
+                
+                
+                
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-link" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <path d="M10 14a3.5 3.5 0 0 0 5 0l4 -4a3.5 3.5 0 0 0 -5 -5l-.5 .5" />
+  <path d="M14 10a3.5 3.5 0 0 0 -5 0l-4 4a3.5 3.5 0 0 0 5 5l.5 -.5" />
+</svg>
+
+
+
+                
+                <span>友情链接</span>
+            </a>
+        </li>
+        
+        <li class="menu-bottom-section">
+            <ol class="menu">
+                    
+                        <li id="i18n-switch">  
+                            <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-language" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+  <path d="M4 5h7" />
+  <path d="M9 3v2c0 4.418 -2.239 8 -5 8" />
+  <path d="M5 9c-.003 2.144 2.952 3.908 6.7 4" />
+  <path d="M12 20l4 -9l4 9" />
+  <path d="M19.1 18h-6.2" />
+</svg>
+
+
+
+                            <select name="language" title="language" onchange="window.location.href = this.selectedOptions[0].value">
+                                
+                                    <option value="https://shi1iu.github.io/" selected>简体中文</option>
+                                
+                                    <option value="https://shi1iu.github.io/en/" >English</option>
+                                
+                                    <option value="https://shi1iu.github.io/ar/" >عربي</option>
+                                
+                            </select>
+                        </li>
+                    
+                
+
+                
+                    <li id="dark-mode-toggle">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-toggle-left" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="8" cy="12" r="2" />
+  <rect x="2" y="6" width="20" height="12" rx="6" />
+</svg>
+
+
+
+                        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-toggle-right" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="16" cy="12" r="2" />
+  <rect x="2" y="6" width="20" height="12" rx="6" />
+</svg>
+
+
+
+                        <span>暗色模式</span>
+                    </li>
+                
+            </ol>
+        </li>
+    </ol>
+</aside>
+
+    <aside class="sidebar right-sidebar sticky">
+        
+            
+                
+    <section class="widget archives">
+        <div class="widget-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-hash" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <line x1="5" y1="9" x2="19" y2="9" />
+  <line x1="5" y1="15" x2="19" y2="15" />
+  <line x1="11" y1="4" x2="7" y2="20" />
+  <line x1="17" y1="4" x2="13" y2="20" />
+</svg>
+
+
+
+        </div>
+        <h2 class="widget-title section-title">目录</h2>
+        
+        <div class="widget--toc">
+            <nav id="TableOfContents">
+  <ol>
+    <li><a href="#背景">背景</a></li>
+    <li><a href="#研究过程">研究过程</a></li>
+    <li><a href="#结果">结果</a></li>
+  </ol>
+</nav>
+        </div>
+    </section>
+
+            
+        
+    </aside>
+
+
+            <main class="main full-width">
+    <article class="has-image main-article">
+    <header class="article-header">
+        <div class="article-image">
+            <a href="/p/">
+                <img src="/p/rixi_hu11050742636954261169.jpg"
+                        srcset="/p/rixi_hu11050742636954261169.jpg 800w, /p/rixi_hu13059559179738420507.jpg 1600w"
+                        width="800" 
+                        height="643" 
+                        loading="lazy"
+                        alt="Featured image of post " />
+                
+            </a>
+        </div>
+    
+
+    <div class="article-details">
+    
+    <header class="article-category">
+        
+            <a href="/categories/linux/" >
+                Linux
+            </a>
+        
+            <a href="/categories/%E8%AE%BE%E5%A4%87%E6%A0%91/" >
+                设备树
+            </a>
+        
+    </header>
+    
+
+    <div class="article-title-wrapper">
+        <h2 class="article-title">
+            <a href="/p/"></a>
+        </h2>
+    
+        
+        <h3 class="article-subtitle">
+            设备树overlay相关的知识学习
+        </h3>
+        
+    </div>
+
+    
+    
+    
+    
+    <footer class="article-time">
+        
+            <div>
+                <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-calendar-time" width="56" height="56" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <path d="M11.795 21h-6.795a2 2 0 0 1 -2 -2v-12a2 2 0 0 1 2 -2h12a2 2 0 0 1 2 2v4" />
+  <circle cx="18" cy="18" r="4" />
+  <path d="M15 3v4" />
+  <path d="M7 3v4" />
+  <path d="M3 11h16" />
+  <path d="M18 16.496v1.504l1 1" />
+</svg>
+                <time class="article-time--published">2026-03-31</time>
+            </div>
+        
+
+        
+    </footer>
+    
+
+    
+</div>
+
+</header>
+
+    <section class="article-content">
+    
+    
+    <p><strong>主要阐述说明了自己的学习过程，因为自己的问题还没弄好</strong></p>
+<h2 id="背景">背景
+</h2><p>​	在使用NVIDIA Jetson Nano Developer Kit开发过程中，想对gpio12进行pwm输出，在不知道gpio12的配置的时候，并且我不知道Linux内核版本的情况下，反汇编得到了起始的设备树dts文件。后来，我得知在nvida ////sudo /opt/nvidia/jetson-io/jetson-io.py下可进行图形化配置，在论坛得知可以通过**配置工具 (jetson-io)**进行配置。我的猜想是它会重新编译在/boot/下的设备树，可是反汇编后发现并没有改变，和原来反汇编的结果是一样的。</p>
+<h2 id="研究过程">研究过程
+</h2><p>​	查阅资料发现，在配置使用jetson-io的情况下，并不会改变原始的设备树文件，而是通过生成一个或者多个增量式的配置文件，即设备树插件（Device Tree Overlay，文件后缀为.dtbo）</p>
+<p><img src="/p/assets/image-20260318142921431.png"
+	width="543"
+	height="901"
+	srcset="/p/assets/image-20260318142921431_hu4769177238163441784.png 480w, /p/assets/image-20260318142921431_hu2514960359255454095.png 1024w"
+	loading="lazy"
+	
+		alt="image-20260318142921431"
+	
+	
+		class="gallery-image" 
+		data-flex-grow="60"
+		data-flex-basis="144px"
+	
+></p>
+<p>会产生类似这种dtbo文件。</p>
+<p>那么让我们学习dtbo</p>
+<blockquote>
+<p><strong>DTBO（Device Tree Blob Overlay）在Linux中的作用是作为一种“增量补丁”，让你在不修改、不重新编译主设备树（DTB）的情况下，动态地添加、修改或禁用硬件配置信息。</strong></p>
+</blockquote>
+<p>作用：</p>
+<ol>
+<li><strong>硬件原型开发与调试</strong>：方便调试，在调试硬件的时候，这种方式可以不用重新编译dtb文件再上电，更不用编译整个内核，通过dtbo插件，快速添加或者修改硬件插件，方便Linux驱动开发者与硬件进行适配调试。</li>
+<li><strong>厂商驱动解耦</strong>：在Soc厂商核心提供的芯片设备树，和自己添加的特殊设备树进行解耦，方便双方独立更新。</li>
+</ol>
+<p>dtbo这么舒服？那我们如何制作一个DTBO嘞？</p>
+<p>那我就用我以前的开发板imu6ull为例吧</p>
+<p>在此之前我发现，需要内核配置支持overlay的选项，这样才行，就在内核菜单中查找关于overlay 的地方</p>
+<p><img src="https://p3-flow-imagex-sign.byteimg.com/tos-cn-i-a9rns2rl98/4688df1cf42c439dbc4cc9cc02f014e0.png~tplv-a9rns2rl98-image.png?lk3s=8e244e95&amp;rcl=202603191505550E419B6A4F11C9B11E2A&amp;rrcfp=dafada99&amp;x-expires=2090127955&amp;x-signature=xOIogrxEfVdIEG5xvk22%2BUjLE%2BE%3D"
+	
+	
+	
+	loading="lazy"
+	
+		alt="img"
+	
+	
+></p>
+<p>发现这里没法修改，最后发现我的环境是交叉编译make menuconfig 加上记得加上 <code>ARCH=arm CROSS_COMPILE=arm-linux-gnueabihf-</code> 就ok了。</p>
+<pre tabindex="0"><code class="language-location" data-lang="location">-Device Drivers
+	-Device Tree and Open Firmware support
+找到 Device Tree overlays 选项（对应 CONFIG_OF_OVERLAY）
+</code></pre><p>首先是写一个dtbo文件，总之，也是使用dtc进行编译的。</p>
+<p>语法</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl"><span class="o">/</span><span class="n">dts</span><span class="o">-</span><span class="n">v1</span><span class="o">/</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="o">/</span><span class="n">plugin</span><span class="o">/</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="o">/</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="n">compatible</span> <span class="o">=</span> <span class="s">&#34;foo,board&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="p">};</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="o">&amp;</span><span class="n">i2c1</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="n">status</span> <span class="o">=</span> <span class="s">&#34;okay&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="p">};</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p><strong>🔹  <code>/dts-v1/;</code> —— 设备树版本声明</strong></p>
+<ul>
+<li><strong>作用</strong>：指定该源文件遵循的设备树语法版本。目前广泛使用的就是 <strong>v1</strong> 版本。</li>
+<li><strong>必要性</strong>：几乎所有现代设备树源文件的开头都包含这行，它告诉 DTC 使用新版语法规则进行解析（早期版本是 v0，现已淘汰）。</li>
+<li><strong>位置</strong>：必须出现在文件的最前面（注释之后）。</li>
+</ul>
+<p><strong>🔹 <code>/plugin/;</code> —— 叠加层标识</strong></p>
+<ul>
+<li><strong>作用</strong>：声明该文件是一个<strong>设备树叠加层（Device Tree Overlay）</strong>，而不是一个完整的、独立的设备树。</li>
+<li><strong>意义</strong>：当 DTC 看到这个标记时，它会以叠加模式编译源文件：
+<ul>
+<li>允许使用 <strong>引用外部节点</strong>（如 <code>&amp;i2c1</code>）而不需要这些节点在当前文件中定义。</li>
+<li>自动为生成的二进制文件（<code>.dtbo</code>）生成必要的 <strong>符号信息</strong>（相当于隐含了 <code>-@</code> 编译选项），以便后续可以动态地叠加到基础设备树上。</li>
+<li>源文件中必须包含 <strong><code>/plugin/;</code></strong> 才能正确使用叠加层语法（如 <code>&amp;{/}</code> 向根节点添加内容）。</li>
+</ul>
+</li>
+<li><strong>注意</strong>：叠加层源文件通常也包含 <code>/dts-v1/;</code>，两者共同表明这是一个 <strong>v1 版本的设备树叠加层</strong>。</li>
+</ul>
+<p>编写了一个版本的dts</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl"><span class="o">/</span><span class="n">dts</span><span class="o">-</span><span class="n">v1</span><span class="o">/</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="o">/</span><span class="n">plugin</span><span class="o">/</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="o">/</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="n">fragment</span><span class="err">@</span><span class="mi">0</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="n">target</span> <span class="o">=</span> <span class="o">&lt;&amp;</span><span class="n">uart1</span><span class="o">&gt;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">        <span class="n">__overlay__</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">            <span class="n">status</span> <span class="o">=</span> <span class="s">&#34;okay&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">            <span class="n">clock</span><span class="o">-</span><span class="n">frequency</span> <span class="o">=</span> <span class="o">&lt;</span><span class="mi">115200</span><span class="o">&gt;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">        <span class="p">};</span>
+</span></span><span class="line"><span class="cl">    <span class="p">};</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="n">fragment</span><span class="err">@</span><span class="mi">1</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="n">target</span> <span class="o">=</span> <span class="o">&lt;&amp;</span><span class="n">alpha</span><span class="o">&gt;</span><span class="p">;</span>  
+</span></span><span class="line"><span class="cl">        <span class="n">__overlay__</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">            <span class="n">status</span> <span class="o">=</span> <span class="s">&#34;disabled&#34;</span><span class="p">;</span>  
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">        <span class="p">};</span>
+</span></span><span class="line"><span class="cl">    <span class="p">};</span>
+</span></span><span class="line"><span class="cl"><span class="p">};</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>发现这里的语法和基础的dts写法还是有点不太一样的，前面有fragment，语法上还是有争议，后续我再展开说明一下。</p>
+<p>遇到问题记录：我在虚拟机Ubuntu 上下载dtc，但是版本太旧，无法识别到/plugin/字段，导致编译失败。</p>
+<p>后面从git上下载最新的dtc</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">root@ubuntu:/home/shi1iu/linux/dtc_tool/dtc# ./dtc --version
+</span></span><span class="line"><span class="cl">Version: DTC 1.7.2-gcaf7465c-dirty
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>步骤</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="c1"># 1. 安装依赖</span>
+</span></span><span class="line"><span class="cl">sudo apt update <span class="o">&amp;&amp;</span> sudo apt install -y build-essential flex bison git
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># 2. 克隆 DTC 源码（官方仓库）</span>
+</span></span><span class="line"><span class="cl">git clone https://git.kernel.org/pub/scm/utils/dtc/dtc.git
+</span></span><span class="line"><span class="cl"><span class="nb">cd</span> dtc
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># 3. 编译（仅需1分钟）</span>
+</span></span><span class="line"><span class="cl">make
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># 4. 临时使用新版 DTC 编译（无需替换系统旧版）</span>
+</span></span><span class="line"><span class="cl">./dtc -I dts -O dtb -o my_overlay.dtbo -@ my_overlay.dts
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>可能需要修改makefile，我这里报错了</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">shi1iu@ubuntu:~/linux/dtc_tool/dtc$ make
+</span></span><span class="line"><span class="cl">Makefile:6: WARNING: Building dtc using make is deprecated, in favour of using Meson <span class="o">(</span>https://mesonbuild.com<span class="o">)</span>
+</span></span><span class="line"><span class="cl">Makefile:7: 
+</span></span><span class="line"><span class="cl">Makefile:8: Use <span class="sb">`</span>meson setup builddir/ <span class="o">&amp;&amp;</span> meson compile -C builddir/<span class="sb">`</span> to build, <span class="sb">`</span>meson <span class="nb">test</span> -C builddir/<span class="sb">`</span> to test, or <span class="sb">`</span>meson configure<span class="sb">`</span> to see build options.
+</span></span><span class="line"><span class="cl">	CHK version_gen.h
+</span></span><span class="line"><span class="cl">	 LEX convert-dtsv0-lexer.lex.c
+</span></span><span class="line"><span class="cl">	 DEP convert-dtsv0-lexer.lex.c
+</span></span><span class="line"><span class="cl">	 BISON dtc-parser.tab.c
+</span></span><span class="line"><span class="cl">	 DEP dtc-parser.tab.c
+</span></span><span class="line"><span class="cl">	 LEX dtc-lexer.lex.c
+</span></span><span class="line"><span class="cl">	 DEP dtc-lexer.lex.c
+</span></span><span class="line"><span class="cl">Makefile:6: WARNING: Building dtc using make is deprecated, in favour of using Meson <span class="o">(</span>https://mesonbuild.com<span class="o">)</span>
+</span></span><span class="line"><span class="cl">Makefile:7: 
+</span></span><span class="line"><span class="cl">Makefile:8: Use <span class="sb">`</span>meson setup builddir/ <span class="o">&amp;&amp;</span> meson compile -C builddir/<span class="sb">`</span> to build, <span class="sb">`</span>meson <span class="nb">test</span> -C builddir/<span class="sb">`</span> to test, or <span class="sb">`</span>meson configure<span class="sb">`</span> to see build options.
+</span></span><span class="line"><span class="cl">	CHK version_gen.h
+</span></span><span class="line"><span class="cl">	 CC convert-dtsv0-lexer.lex.o
+</span></span><span class="line"><span class="cl">convert-dtsv0-lexer.lex.c: In <span class="k">function</span> ‘yy_get_next_buffer’:
+</span></span><span class="line"><span class="cl">convert-dtsv0-lexer.lex.c:1320:44: error: comparison between signed and unsigned integer expressions <span class="o">[</span>-Werror<span class="o">=</span>sign-compare<span class="o">]</span>
+</span></span><span class="line"><span class="cl">  <span class="k">if</span> <span class="o">((</span>int<span class="o">)</span> <span class="o">((</span>yy_n_chars<span class="o">)</span> + number_to_move<span class="o">)</span> &gt; YY_CURRENT_BUFFER_LVALUE-&gt;yy_buf_size<span class="o">)</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">                                            ^
+</span></span><span class="line"><span class="cl">cc1: all warnings being treated as errors
+</span></span><span class="line"><span class="cl">Makefile:324: recipe <span class="k">for</span> target <span class="s1">&#39;convert-dtsv0-lexer.lex.o&#39;</span> failed
+</span></span><span class="line"><span class="cl">make: *** <span class="o">[</span>convert-dtsv0-lexer.lex.o<span class="o">]</span> Error <span class="m">1</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>把makefile这里关了就好了</p>
+<p><img src="/p/assets/image-20260319200547463.png"
+	width="737"
+	height="514"
+	srcset="/p/assets/image-20260319200547463_hu10261175103492508619.png 480w, /p/assets/image-20260319200547463_hu5986536047528398191.png 1024w"
+	loading="lazy"
+	
+		alt="image-20260319200547463"
+	
+	
+		class="gallery-image" 
+		data-flex-grow="143"
+		data-flex-basis="344px"
+	
+></p>
+<p>重新make clean然后编译一下就好了</p>
+<p>已完成的工作：将dtbo文件移动到emmc里了。</p>
+<p>弄了半天，告诉我需通过 <code>configfs</code> 加载 /<code>fdtoverlay</code> 合并 / U-Boot 加载才能生效；</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">root@ATK-IMX6U:/lib/firmware# zcat /proc/config.gz <span class="p">|</span> grep -E <span class="s2">&#34;CONFIG_OF_OVERLAY|CONFIG_CONFIGFS_FS&#34;</span>
+</span></span><span class="line"><span class="cl"><span class="nv">CONFIG_OF_OVERLAY</span><span class="o">=</span>y
+</span></span><span class="line"><span class="cl"><span class="nv">CONFIG_CONFIGFS_FS</span><span class="o">=</span>m
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>这里告诉我的内核没有配置CONFIG_CONFIGFS_FS。我裂开了。明天继续把，已经下班了；</p>
+<p>现在是紧张刺激的第二天 :)</p>
+<p>注意事项：为了保证配置环境在以前的基础上叠加，需要将开发板里的config.gz拷贝到虚拟机中的内核目录（交叉编译环境）并修改名为.config，重新加载即可</p>
+<p><img src="/p/assets/image-20260320095347479.png"
+	width="638"
+	height="279"
+	srcset="/p/assets/image-20260320095347479_hu4489026057948811210.png 480w, /p/assets/image-20260320095347479_hu3883634799850931563.png 1024w"
+	loading="lazy"
+	
+		alt="image-20260320095347479"
+	
+	
+		class="gallery-image" 
+		data-flex-grow="228"
+		data-flex-basis="548px"
+	
+></p>
+<p>文件位置如上图所示。</p>
+<p>配置下面的设置</p>
+<p><img src="/p/assets/image-20260320094637107.png"
+	width="1405"
+	height="318"
+	srcset="/p/assets/image-20260320094637107_hu13245831944793442844.png 480w, /p/assets/image-20260320094637107_hu12338459554422510469.png 1024w"
+	loading="lazy"
+	
+		alt="image-20260320094637107"
+	
+	
+		class="gallery-image" 
+		data-flex-grow="441"
+		data-flex-basis="1060px"
+	
+></p>
+<p>重新修改内核并加载内核后</p>
+<p><img src="/p/assets/image-20260320094744140.png"
+	width="678"
+	height="68"
+	srcset="/p/assets/image-20260320094744140_hu4244668316256316411.png 480w, /p/assets/image-20260320094744140_hu14910605004427504106.png 1024w"
+	loading="lazy"
+	
+		alt="image-20260320094744140"
+	
+	
+		class="gallery-image" 
+		data-flex-grow="997"
+		data-flex-basis="2392px"
+	
+></p>
+<p>已经完成了这一步。</p>
+<p>简单来说：不是 “不想”，而是你的 ATK-IMX6U 开发板内核环境<strong>不满足动态加载的核心条件</strong>，强行尝试只会浪费时间。</p>
+<hr>
+<h2 id="结果">结果
+</h2><p><strong>为什么无法动态加载？（核心原因拆解）</strong></p>
+<p>动态加载 dtbo 必须同时满足 3 个条件，你的环境只满足 1 个，另外 2 个核心条件缺失：</p>
+<div class="table-wrapper"><table>
+<thead>
+<tr>
+<th style="text-align:center">条件</th>
+<th style="text-align:center">你的环境状态</th>
+<th style="text-align:center">是否满足</th>
+<th style="text-align:center">补充说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center">1. 内核开启 <code>CONFIG_OF_OVERLAY=y</code></td>
+<td style="text-align:center">是（<code>zcat /proc/config.gz</code> 验证过）</td>
+<td style="text-align:center">✅</td>
+<td style="text-align:center">仅配置层面开启，无实际功能支撑</td>
+</tr>
+<tr>
+<td style="text-align:center">2. 内核开启 <code>CONFIG_CONFIGFS_FS=y</code> 且初始化 <code>device-tree</code> 目录</td>
+<td style="text-align:center">否（<code>/sys/kernel/config</code> 为空）</td>
+<td style="text-align:center">❌</td>
+<td style="text-align:center">内核未创建 Overlay 所需的核心目录</td>
+</tr>
+<tr>
+<td style="text-align:center">3. 存在 <code>of_overlay</code> 内核模块 / 内置逻辑</td>
+<td style="text-align:center">否（<code>modprobe of_overlay</code> 提示模块不存在）</td>
+<td style="text-align:center">❌</td>
+<td style="text-align:center">核心功能模块缺失，无法解析 dtbo</td>
+</tr>
+</tbody>
+</table></div>
+<p>👉 本质：你的内核是 “阉割版”—— 仅在配置文件中标注了 <code>CONFIG_OF_OVERLAY=y</code>，但实际编译时并未将 Overlay 核心逻辑 / 模块内置到内核，属于典型的 “配置和实际编译不一致”（IMX6ULL 原厂内核常见问题）。</p>
+<p>:( 提供了另外一种思路就是通过fdtoverlay（即下载dtc下的工具），暂且不做说明。</p>
+<p>学习一下configfs相关的吧</p>
+
+</section>
+
+
+    <footer class="article-footer">
+    
+
+    </footer>
+
+
+    
+</article>
+
+    
+
+    
+
+<aside class="related-content--wrapper">
+    <h2 class="section-title">相关文章</h2>
+    <div class="related-content">
+        <div class="flex article-list--tile">
+            
+                
+<article class="has-image">
+    <a href="/p/%E5%8A%A0%E8%BD%BD%E5%86%85%E6%A0%B8%E7%89%88%E6%9C%AC%E4%B8%8D%E4%B8%80%E8%87%B4%E6%8A%A5%E9%94%99/">
+        
+        
+            <div class="article-image">
+                <img src="/p/%E5%8A%A0%E8%BD%BD%E5%86%85%E6%A0%B8%E7%89%88%E6%9C%AC%E4%B8%8D%E4%B8%80%E8%87%B4%E6%8A%A5%E9%94%99/fengjing.92183627b5a4cc4e0d61e6f00409bdc2_hu3152886435677111014.jpg" 
+                        width="250" 
+                        height="150" 
+                        loading="lazy"
+                        alt="Featured image of post 加载内核版本不一致报错"
+                        
+                        data-hash="md5-khg2J7WkzE4NYebwBAm9wg==">
+                
+            </div>
+        
+
+        <div class="article-details">
+            <h2 class="article-title">加载内核版本不一致报错</h2>
+        </div>
+    </a>
+</article>
+
+            
+                
+<article class="has-image">
+    <a href="/p/linux%E4%B8%8Bopen%E5%92%8C%E6%96%87%E4%BB%B6%E6%9D%83%E9%99%90%E9%97%AE%E9%A2%98/">
+        
+        
+            <div class="article-image">
+                <img src="/p/linux%E4%B8%8Bopen%E5%92%8C%E6%96%87%E4%BB%B6%E6%9D%83%E9%99%90%E9%97%AE%E9%A2%98/picture.b3c716e5dbf7bd315622215bcec7693a_hu1072753426690379624.jpg" 
+                        width="250" 
+                        height="150" 
+                        loading="lazy"
+                        alt="Featured image of post Linux下open()和文件权限问题"
+                        
+                        data-hash="md5-s8cW5dv3vTFWIiFbzsdpOg==">
+                
+            </div>
+        
+
+        <div class="article-details">
+            <h2 class="article-title">Linux下open()和文件权限问题</h2>
+        </div>
+    </a>
+</article>
+
+            
+                
+<article class="has-image">
+    <a href="/p/%E8%AE%BE%E5%A4%87%E6%A0%91/">
+        
+        
+            <div class="article-image">
+                <img src="/p/%E8%AE%BE%E5%A4%87%E6%A0%91/beijin.17b7b830a4a6cd22e552c797b90d0697_hu505790309888073029.jpg" 
+                        width="250" 
+                        height="150" 
+                        loading="lazy"
+                        alt="Featured image of post 设备树"
+                        
+                        data-hash="md5-F7e4MKSmzSLlUseXuQ0Glw==">
+                
+            </div>
+        
+
+        <div class="article-details">
+            <h2 class="article-title">设备树</h2>
+        </div>
+    </a>
+</article>
+
+            
+        </div>
+    </div>
+</aside>
+
+     
+    
+        
+    
+
+    <footer class="site-footer">
+    <section class="copyright">
+        &copy; 
+        
+            2024 - 
+        
+        2026 shi1iu
+    </section>
+    
+    <section class="powerby">
+        使用 <a href="https://gohugo.io/" target="_blank" rel="noopener">Hugo</a> 构建 <br />
+        主题 <b><a href="https://github.com/CaiJimmy/hugo-theme-stack" target="_blank" rel="noopener" data-version="3.26.0">Stack</a></b> 由 <a href="https://jimmycai.com" target="_blank" rel="noopener">Jimmy</a> 设计
+    </section>
+</footer>
+
+
+    
+<div class="pswp" tabindex="-1" role="dialog" aria-hidden="true">
+
+    
+    <div class="pswp__bg"></div>
+
+    
+    <div class="pswp__scroll-wrap">
+
+        
+        <div class="pswp__container">
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+        </div>
+
+        
+        <div class="pswp__ui pswp__ui--hidden">
+
+            <div class="pswp__top-bar">
+
+                
+
+                <div class="pswp__counter"></div>
+
+                <button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+
+                <button class="pswp__button pswp__button--share" title="Share"></button>
+
+                <button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+
+                <button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
+
+                
+                
+                <div class="pswp__preloader">
+                    <div class="pswp__preloader__icn">
+                        <div class="pswp__preloader__cut">
+                            <div class="pswp__preloader__donut"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
+                <div class="pswp__share-tooltip"></div>
+            </div>
+
+            <button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+            </button>
+
+            <button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)">
+            </button>
+
+            <div class="pswp__caption">
+                <div class="pswp__caption__center"></div>
+            </div>
+
+        </div>
+
+    </div>
+
+</div><script 
+                src="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.js"integrity="sha256-ePwmChbbvXbsO02lbM3HoHbSHTHFAeChekF1xKJdleo="crossorigin="anonymous"
+                defer
+                >
+            </script><script 
+                src="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe-ui-default.min.js"integrity="sha256-UKkzOn/w1mBxRmLLGrSeyB4e1xbrp4xylgAWb3M42pU="crossorigin="anonymous"
+                defer
+                >
+            </script><link 
+                rel="stylesheet" 
+                href="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/default-skin/default-skin.min.css"crossorigin="anonymous"
+            ><link 
+                rel="stylesheet" 
+                href="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.css"crossorigin="anonymous"
+            >
+
+            </main>
+        </div>
+        <script 
+                src="https://cdn.jsdelivr.net/npm/node-vibrant@3.1.6/dist/vibrant.min.js"integrity="sha256-awcR2jno4kI5X0zL8ex0vi2z&#43;KMkF24hUW8WePSA9HM="crossorigin="anonymous"
+                
+                >
+            </script><script type="text/javascript" src="/ts/main.js" defer></script>
+<script>
+    (function () {
+        const customFont = document.createElement('link');
+        customFont.href = "https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700&display=swap";
+
+        customFont.type = "text/css";
+        customFont.rel = "stylesheet";
+
+        document.head.appendChild(customFont);
+    }());
+</script>
+
+    </body>
+</html>
