@@ -7,21 +7,275 @@
         <generator>Hugo -- gohugo.io</generator>
         <language>zh-cn</language>
         <copyright>shi1iu</copyright>
-        <lastBuildDate>Tue, 31 Mar 2026 00:00:00 +0000</lastBuildDate><atom:link href="https://shi1iu.github.io/index.xml" rel="self" type="application/rss+xml" /><item>
-        <title></title>
-        <link>https://shi1iu.github.io/p/</link>
+        <lastBuildDate>Wed, 08 Apr 2026 00:00:00 +0000</lastBuildDate><atom:link href="https://shi1iu.github.io/index.xml" rel="self" type="application/rss+xml" /><item>
+        <title>NVIDIA Jetson Nano Linux下pwm使用问题</title>
+        <link>https://shi1iu.github.io/p/nvidia-jetson-nano-linux%E4%B8%8Bpwm%E4%BD%BF%E7%94%A8%E9%97%AE%E9%A2%98/</link>
+        <pubDate>Wed, 08 Apr 2026 00:00:00 +0000</pubDate>
+        
+        <guid>https://shi1iu.github.io/p/nvidia-jetson-nano-linux%E4%B8%8Bpwm%E4%BD%BF%E7%94%A8%E9%97%AE%E9%A2%98/</guid>
+        <description>&lt;img src="https://shi1iu.github.io/p/nvidia-jetson-nano-linux%E4%B8%8Bpwm%E4%BD%BF%E7%94%A8%E9%97%AE%E9%A2%98/mubiao.jpg" alt="Featured image of post NVIDIA Jetson Nano Linux下pwm使用问题" /&gt;&lt;h1 id=&#34;nvidia-jetson-nano-developer-kit-linux下pwm使用问题&#34;&gt;NVIDIA Jetson Nano Developer Kit Linux下pwm使用问题
+&lt;/h1&gt;&lt;h2 id=&#34;背景&#34;&gt;背景
+&lt;/h2&gt;&lt;p&gt;我想使用NVIDIA Jetson Nano Developer Kit Linux下pwm4的作为一个硬件定时给fpga，项目需要一个标志位给fpga作基准，保证实时性。&lt;/p&gt;
+&lt;p&gt;我想产生1ms即1000000ns的时钟时遇到了精度的问题。&lt;/p&gt;
+&lt;h2 id=&#34;分析过程&#34;&gt;分析过程
+&lt;/h2&gt;&lt;p&gt;pwm4对应的是408MHz。&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;https://shi1iu.github.io/p/nvidia-jetson-nano-linux%E4%B8%8Bpwm%E4%BD%BF%E7%94%A8%E9%97%AE%E9%A2%98/assets/Snipaste_2026-03-23_19-03-48.png&#34;
+	width=&#34;979&#34;
+	height=&#34;191&#34;
+	srcset=&#34;https://shi1iu.github.io/p/nvidia-jetson-nano-linux%E4%B8%8Bpwm%E4%BD%BF%E7%94%A8%E9%97%AE%E9%A2%98/assets/Snipaste_2026-03-23_19-03-48_hu8586781287849431248.png 480w, https://shi1iu.github.io/p/nvidia-jetson-nano-linux%E4%B8%8Bpwm%E4%BD%BF%E7%94%A8%E9%97%AE%E9%A2%98/assets/Snipaste_2026-03-23_19-03-48_hu786347565546992281.png 1024w&#34;
+	loading=&#34;lazy&#34;
+	
+		alt=&#34;Snipaste_2026-03-23_19-03-48&#34;
+	
+	
+		class=&#34;gallery-image&#34; 
+		data-flex-grow=&#34;512&#34;
+		data-flex-basis=&#34;1230px&#34;
+	
+&gt;&lt;/p&gt;
+&lt;p&gt;我使用的pwm4是使用前面提到的overlay的pwm4，pin15即&lt;/p&gt;
+&lt;img src=&#34;assets/image-20260407142221779.png&#34; alt=&#34;image-20260407142221779&#34; style=&#34;zoom: 50%;&#34; /&gt;
+&lt;p&gt;按理来说，408MHz时钟肯定是足够的，结果测出来发现&lt;/p&gt;
+&lt;img src=&#34;assets/image-20260407142502526.png&#34; alt=&#34;image-20260407142502526&#34; style=&#34;zoom:33%;&#34; /&gt;
+&lt;p&gt;时间根本不准啊，和理想的情况误差相差很大。&lt;/p&gt;
+&lt;p&gt;最后查看内核驱动源码发现&lt;/p&gt;
+&lt;img src=&#34;assets/image-20260407142707932.png&#34; alt=&#34;image-20260407142707932&#34; style=&#34;zoom: 80%;&#34; /&gt;
+&lt;p&gt;发现这里pwm-tegre.c中&lt;code&gt;clk_set_rate&lt;/code&gt;会按照你想要的周期去匹配所需的频率，但是我们使用的场景要求，这样的误差时间太大了。&lt;/p&gt;
+&lt;p&gt;根据调试，将内核代码中添加打印信息，打印出&lt;code&gt;pc-&amp;gt;clk_rate&lt;/code&gt;和&lt;code&gt;rate&lt;/code&gt;。&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;https://shi1iu.github.io/p/nvidia-jetson-nano-linux%E4%B8%8Bpwm%E4%BD%BF%E7%94%A8%E9%97%AE%E9%A2%98/assets/image-20260407143257079.png&#34;
+	width=&#34;839&#34;
+	height=&#34;262&#34;
+	srcset=&#34;https://shi1iu.github.io/p/nvidia-jetson-nano-linux%E4%B8%8Bpwm%E4%BD%BF%E7%94%A8%E9%97%AE%E9%A2%98/assets/image-20260407143257079_hu6642047525592548837.png 480w, https://shi1iu.github.io/p/nvidia-jetson-nano-linux%E4%B8%8Bpwm%E4%BD%BF%E7%94%A8%E9%97%AE%E9%A2%98/assets/image-20260407143257079_hu15813144952803769903.png 1024w&#34;
+	loading=&#34;lazy&#34;
+	
+	
+		class=&#34;gallery-image&#34; 
+		data-flex-grow=&#34;320&#34;
+		data-flex-basis=&#34;768px&#34;
+	
+&gt;&lt;/p&gt;
+&lt;p&gt;&lt;code&gt;pc-&amp;gt;clk_rate = 3187500&lt;/code&gt;还有&lt;code&gt;rate = 12&lt;/code&gt;并且查找相关TRM。&lt;/p&gt;
+&lt;p&gt;period = rate * (1/(pc-&amp;gt;clk_rate/256))&lt;/p&gt;
+&lt;p&gt;问题符合。如何解决呢？&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;通过查看发现，其他pwm有19.2MHz 的频率，能真好除以分频值，可能是可以。pwm6是19.2Mhz，用做pwm-fan了&lt;/li&gt;
+&lt;li&gt;改变pwm4的父时钟，将父时钟改变成其他时钟源&lt;/li&gt;
+&lt;li&gt;改内核驱动源码，直接使用408MHz时钟，这样误差会变小很多。&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;使用方法1，nVidia有一个pinmux 的excel，可以生成pinmux 的设备树dtsi文件。&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;https://shi1iu.github.io/p/nvidia-jetson-nano-linux%E4%B8%8Bpwm%E4%BD%BF%E7%94%A8%E9%97%AE%E9%A2%98/assets/image-20260407144219671.png&#34;
+	width=&#34;1026&#34;
+	height=&#34;119&#34;
+	srcset=&#34;https://shi1iu.github.io/p/nvidia-jetson-nano-linux%E4%B8%8Bpwm%E4%BD%BF%E7%94%A8%E9%97%AE%E9%A2%98/assets/image-20260407144219671_hu18391434721490936699.png 480w, https://shi1iu.github.io/p/nvidia-jetson-nano-linux%E4%B8%8Bpwm%E4%BD%BF%E7%94%A8%E9%97%AE%E9%A2%98/assets/image-20260407144219671_hu7818782460768235810.png 1024w&#34;
+	loading=&#34;lazy&#34;
+	
+		alt=&#34;image-20260407144219671&#34;
+	
+	
+		class=&#34;gallery-image&#34; 
+		data-flex-grow=&#34;862&#34;
+		data-flex-basis=&#34;2069px&#34;
+	
+&gt;&lt;/p&gt;
+&lt;p&gt;但是在使用过程中发现，这个方法需要重新使用BSP进行刷机，我们暂且放下寻找其他方法。&lt;/p&gt;
+&lt;p&gt;另外一种是使用加载时的dtb文件，使用dtc生产dts文件，修改设备树，添加pinmux，我们需要找到pwm所需的gpio。再或者使用overlay进行添加功能。前提是删除pwm6的风扇功能。&lt;/p&gt;
+&lt;p&gt;使用方法二，修改父时钟，&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;https://shi1iu.github.io/p/nvidia-jetson-nano-linux%E4%B8%8Bpwm%E4%BD%BF%E7%94%A8%E9%97%AE%E9%A2%98/assets/image-20260407144632867.png&#34;
+	width=&#34;579&#34;
+	height=&#34;472&#34;
+	srcset=&#34;https://shi1iu.github.io/p/nvidia-jetson-nano-linux%E4%B8%8Bpwm%E4%BD%BF%E7%94%A8%E9%97%AE%E9%A2%98/assets/image-20260407144632867_hu12200003933849992913.png 480w, https://shi1iu.github.io/p/nvidia-jetson-nano-linux%E4%B8%8Bpwm%E4%BD%BF%E7%94%A8%E9%97%AE%E9%A2%98/assets/image-20260407144632867_hu6925092632086747324.png 1024w&#34;
+	loading=&#34;lazy&#34;
+	
+		alt=&#34;image-20260407144632867&#34;
+	
+	
+		class=&#34;gallery-image&#34; 
+		data-flex-grow=&#34;122&#34;
+		data-flex-basis=&#34;294px&#34;
+	
+&gt;&lt;/p&gt;
+&lt;p&gt;这是反汇编编译出来的dts文件，我想改变父时钟的频率，正常使用&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;assigned-clocks&lt;/code&gt;：指定需要被初始化的时钟，是操作的对象。&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;assigned-clock-parents&lt;/code&gt;：为上一项指定的时钟设置新的父时钟源。&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;assigned-clock-rates&lt;/code&gt;：为上一项指定的时钟设置期望的运行频率。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;即可。&lt;/p&gt;
+&lt;p&gt;尝试完发现加载pwm驱动后linux直接卡死了，改变clocks的参数也一样。&lt;/p&gt;
+&lt;p&gt;方法三，修改源码，将pwm-tegre.c中&lt;code&gt;clk_set_rate&lt;/code&gt;删掉并且需要保留256分频的计算。&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt; 1
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 2
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 3
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 4
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 5
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 6
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 7
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 8
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 9
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;10
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;11
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;12
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;13
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;14
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;15
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;16
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;17
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;18
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;19
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;20
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;21
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;22
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;23
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;24
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;25
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;26
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;27
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;28
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;29
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;30
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;31
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;32
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;33
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;34
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;35
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;36
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;37
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;38
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;39
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;40
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;41
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;42
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;43
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-c&#34; data-lang=&#34;c&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;k&#34;&gt;static&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;int&lt;/span&gt; &lt;span class=&#34;nf&#34;&gt;tegra_pwm_config&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;k&#34;&gt;struct&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;pwm_chip&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;*&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;chip&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;k&#34;&gt;struct&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;pwm_device&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;*&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;pwm&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;			    &lt;span class=&#34;kt&#34;&gt;int&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;duty_ns&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;int&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;period_ns&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;p&#34;&gt;{&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;	&lt;span class=&#34;k&#34;&gt;struct&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;tegra_pwm_chip&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;*&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;pc&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;nf&#34;&gt;to_tegra_pwm_chip&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;chip&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;);&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;	&lt;span class=&#34;kt&#34;&gt;unsigned&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;long&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;long&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;c&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;duty_ns&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;	&lt;span class=&#34;kt&#34;&gt;unsigned&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;long&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;rate&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;	&lt;span class=&#34;n&#34;&gt;u32&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;val&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;mi&#34;&gt;0&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;	&lt;span class=&#34;kt&#34;&gt;int&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;err&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;	&lt;span class=&#34;c1&#34;&gt;// 占空比计算（原厂正确逻辑）
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;c1&#34;&gt;&lt;/span&gt;	&lt;span class=&#34;n&#34;&gt;c&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;*=&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;1&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;&amp;lt;&amp;lt;&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;PWM_DUTY_WIDTH&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;);&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;	&lt;span class=&#34;n&#34;&gt;c&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;nf&#34;&gt;DIV_ROUND_CLOSEST_ULL&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;c&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;period_ns&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;);&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;	&lt;span class=&#34;n&#34;&gt;val&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;u32&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;c&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;&amp;lt;&amp;lt;&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;PWM_DUTY_SHIFT&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;	&lt;span class=&#34;c1&#34;&gt;// ===================== 【真正安全、不溢出、原厂兼容】 =====================
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;c1&#34;&gt;&lt;/span&gt;	&lt;span class=&#34;c1&#34;&gt;// 原厂公式：保证 13bit 永远不越界！！！
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;c1&#34;&gt;&lt;/span&gt;	&lt;span class=&#34;n&#34;&gt;rate&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;nf&#34;&gt;DIV_ROUND_CLOSEST_ULL&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;((&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;u64&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;pc&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;-&amp;gt;&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;clk_rate&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;*&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;period_ns&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;NSEC_PER_SEC&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;);&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;	&lt;span class=&#34;n&#34;&gt;rate&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;nf&#34;&gt;DIV_ROUND_CLOSEST_ULL&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;rate&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;1&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;&amp;lt;&amp;lt;&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;PWM_DUTY_WIDTH&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;));&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;	&lt;span class=&#34;c1&#34;&gt;// ========================================================================
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;c1&#34;&gt;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;	&lt;span class=&#34;k&#34;&gt;if&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;rate&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;&amp;gt;&lt;/span&gt; &lt;span class=&#34;mi&#34;&gt;0&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;		&lt;span class=&#34;n&#34;&gt;rate&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;--&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;	&lt;span class=&#34;c1&#34;&gt;// 13bit 寄存器安全判断
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;c1&#34;&gt;&lt;/span&gt;	&lt;span class=&#34;k&#34;&gt;if&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;rate&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;&amp;gt;=&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;1&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;&amp;lt;&amp;lt;&lt;/span&gt; &lt;span class=&#34;mi&#34;&gt;13&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;))&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;		&lt;span class=&#34;k&#34;&gt;return&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;-&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;EINVAL&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;	&lt;span class=&#34;n&#34;&gt;val&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;|=&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;rate&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;&amp;lt;&amp;lt;&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;PWM_SCALE_SHIFT&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;	&lt;span class=&#34;k&#34;&gt;if&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;!&lt;/span&gt;&lt;span class=&#34;nf&#34;&gt;pwm_is_enabled&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;pwm&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;))&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;{&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;		&lt;span class=&#34;n&#34;&gt;err&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;nf&#34;&gt;clk_prepare_enable&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;pc&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;-&amp;gt;&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;clk&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;);&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;		&lt;span class=&#34;k&#34;&gt;if&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;err&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;&amp;lt;&lt;/span&gt; &lt;span class=&#34;mi&#34;&gt;0&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;			&lt;span class=&#34;k&#34;&gt;return&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;err&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;	&lt;span class=&#34;p&#34;&gt;}&lt;/span&gt; &lt;span class=&#34;k&#34;&gt;else&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;		&lt;span class=&#34;n&#34;&gt;val&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;|=&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;PWM_ENABLE&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;	&lt;span class=&#34;nf&#34;&gt;pwm_writel&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;pc&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;pwm&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;-&amp;gt;&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;hwpwm&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;val&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;);&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;	&lt;span class=&#34;k&#34;&gt;if&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;!&lt;/span&gt;&lt;span class=&#34;nf&#34;&gt;pwm_is_enabled&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;pwm&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;))&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;		&lt;span class=&#34;nf&#34;&gt;clk_disable_unprepare&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;pc&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;-&amp;gt;&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;clk&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;);&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;	&lt;span class=&#34;k&#34;&gt;return&lt;/span&gt; &lt;span class=&#34;mi&#34;&gt;0&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;p&#34;&gt;}&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;p&gt;修改发现使用的408MHz误差较小。&lt;/p&gt;
+&lt;p&gt;修改父时钟发现，发现时钟控制是通过bpmp控制，查看了相关资料，bpmp修改父时钟源也需要BSP进行刷机。&lt;/p&gt;
+&lt;h2 id=&#34;问题解决&#34;&gt;问题解决
+&lt;/h2&gt;&lt;p&gt;发现官方文档有介绍用bpmp可以将pwm4的时钟锁起来，pwm-tegre.c中&lt;code&gt;clk_set_rate&lt;/code&gt;就不会起作用。&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;https://shi1iu.github.io/p/nvidia-jetson-nano-linux%E4%B8%8Bpwm%E4%BD%BF%E7%94%A8%E9%97%AE%E9%A2%98/assets/image-20260408144353115.png&#34;
+	width=&#34;1131&#34;
+	height=&#34;90&#34;
+	srcset=&#34;https://shi1iu.github.io/p/nvidia-jetson-nano-linux%E4%B8%8Bpwm%E4%BD%BF%E7%94%A8%E9%97%AE%E9%A2%98/assets/image-20260408144353115_hu10614511526277402326.png 480w, https://shi1iu.github.io/p/nvidia-jetson-nano-linux%E4%B8%8Bpwm%E4%BD%BF%E7%94%A8%E9%97%AE%E9%A2%98/assets/image-20260408144353115_hu9560533899256524338.png 1024w&#34;
+	loading=&#34;lazy&#34;
+	
+		alt=&#34;image-20260408144353115&#34;
+	
+	
+		class=&#34;gallery-image&#34; 
+		data-flex-grow=&#34;1256&#34;
+		data-flex-basis=&#34;3016px&#34;
+	
+&gt;&lt;/p&gt;
+&lt;p&gt;设置rate为408000000即可，效果如下&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;https://shi1iu.github.io/p/nvidia-jetson-nano-linux%E4%B8%8Bpwm%E4%BD%BF%E7%94%A8%E9%97%AE%E9%A2%98/assets/image-20260408144427800.png&#34;
+	width=&#34;475&#34;
+	height=&#34;158&#34;
+	srcset=&#34;https://shi1iu.github.io/p/nvidia-jetson-nano-linux%E4%B8%8Bpwm%E4%BD%BF%E7%94%A8%E9%97%AE%E9%A2%98/assets/image-20260408144427800_hu13424096596747483343.png 480w, https://shi1iu.github.io/p/nvidia-jetson-nano-linux%E4%B8%8Bpwm%E4%BD%BF%E7%94%A8%E9%97%AE%E9%A2%98/assets/image-20260408144427800_hu5273511301115636070.png 1024w&#34;
+	loading=&#34;lazy&#34;
+	
+		alt=&#34;image-20260408144427800&#34;
+	
+	
+		class=&#34;gallery-image&#34; 
+		data-flex-grow=&#34;300&#34;
+		data-flex-basis=&#34;721px&#34;
+	
+&gt;&lt;/p&gt;
+&lt;p&gt;通过fpga测得结果&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;https://shi1iu.github.io/p/nvidia-jetson-nano-linux%E4%B8%8Bpwm%E4%BD%BF%E7%94%A8%E9%97%AE%E9%A2%98/assets/image-20260408144511623.png&#34;
+	width=&#34;527&#34;
+	height=&#34;384&#34;
+	srcset=&#34;https://shi1iu.github.io/p/nvidia-jetson-nano-linux%E4%B8%8Bpwm%E4%BD%BF%E7%94%A8%E9%97%AE%E9%A2%98/assets/image-20260408144511623_hu4453855504375293715.png 480w, https://shi1iu.github.io/p/nvidia-jetson-nano-linux%E4%B8%8Bpwm%E4%BD%BF%E7%94%A8%E9%97%AE%E9%A2%98/assets/image-20260408144511623_hu9391154014885209612.png 1024w&#34;
+	loading=&#34;lazy&#34;
+	
+		alt=&#34;image-20260408144511623&#34;
+	
+	
+		class=&#34;gallery-image&#34; 
+		data-flex-grow=&#34;137&#34;
+		data-flex-basis=&#34;329px&#34;
+	
+&gt;&lt;/p&gt;
+&lt;p&gt;误差在160ns。&lt;/p&gt;
+&lt;p&gt;补充pwm的框图&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;https://shi1iu.github.io/p/nvidia-jetson-nano-linux%E4%B8%8Bpwm%E4%BD%BF%E7%94%A8%E9%97%AE%E9%A2%98/assets/image-20260408145042765.png&#34;
+	width=&#34;724&#34;
+	height=&#34;267&#34;
+	srcset=&#34;https://shi1iu.github.io/p/nvidia-jetson-nano-linux%E4%B8%8Bpwm%E4%BD%BF%E7%94%A8%E9%97%AE%E9%A2%98/assets/image-20260408145042765_hu3204890473276686489.png 480w, https://shi1iu.github.io/p/nvidia-jetson-nano-linux%E4%B8%8Bpwm%E4%BD%BF%E7%94%A8%E9%97%AE%E9%A2%98/assets/image-20260408145042765_hu6401729054190446469.png 1024w&#34;
+	loading=&#34;lazy&#34;
+	
+		alt=&#34;image-20260408145042765&#34;
+	
+	
+		class=&#34;gallery-image&#34; 
+		data-flex-grow=&#34;271&#34;
+		data-flex-basis=&#34;650px&#34;
+	
+&gt;&lt;/p&gt;
+</description>
+        </item>
+        <item>
+        <title>设备树overlay介绍</title>
+        <link>https://shi1iu.github.io/p/%E8%AE%BE%E5%A4%87%E6%A0%91overlay%E4%BB%8B%E7%BB%8D/</link>
         <pubDate>Tue, 31 Mar 2026 00:00:00 +0000</pubDate>
         
-        <guid>https://shi1iu.github.io/p/</guid>
-        <description>&lt;img src="https://shi1iu.github.io/p/rixi.jpg" alt="Featured image of post " /&gt;&lt;p&gt;&lt;strong&gt;主要阐述说明了自己的学习过程，因为自己的问题还没弄好&lt;/strong&gt;&lt;/p&gt;
+        <guid>https://shi1iu.github.io/p/%E8%AE%BE%E5%A4%87%E6%A0%91overlay%E4%BB%8B%E7%BB%8D/</guid>
+        <description>&lt;img src="https://shi1iu.github.io/p/%E8%AE%BE%E5%A4%87%E6%A0%91overlay%E4%BB%8B%E7%BB%8D/rixi.jpg" alt="Featured image of post 设备树overlay介绍" /&gt;&lt;p&gt;&lt;strong&gt;主要阐述说明了自己的学习过程，因为自己的问题还没弄好&lt;/strong&gt;&lt;/p&gt;
 &lt;h2 id=&#34;背景&#34;&gt;背景
 &lt;/h2&gt;&lt;p&gt;​	在使用NVIDIA Jetson Nano Developer Kit开发过程中，想对gpio12进行pwm输出，在不知道gpio12的配置的时候，并且我不知道Linux内核版本的情况下，反汇编得到了起始的设备树dts文件。后来，我得知在nvida ////sudo /opt/nvidia/jetson-io/jetson-io.py下可进行图形化配置，在论坛得知可以通过**配置工具 (jetson-io)**进行配置。我的猜想是它会重新编译在/boot/下的设备树，可是反汇编后发现并没有改变，和原来反汇编的结果是一样的。&lt;/p&gt;
 &lt;h2 id=&#34;研究过程&#34;&gt;研究过程
 &lt;/h2&gt;&lt;p&gt;​	查阅资料发现，在配置使用jetson-io的情况下，并不会改变原始的设备树文件，而是通过生成一个或者多个增量式的配置文件，即设备树插件（Device Tree Overlay，文件后缀为.dtbo）&lt;/p&gt;
-&lt;p&gt;&lt;img src=&#34;https://shi1iu.github.io/p/assets/image-20260318142921431.png&#34;
+&lt;p&gt;&lt;img src=&#34;https://shi1iu.github.io/p/%E8%AE%BE%E5%A4%87%E6%A0%91overlay%E4%BB%8B%E7%BB%8D/assets/image-20260318142921431.png&#34;
 	width=&#34;543&#34;
 	height=&#34;901&#34;
-	srcset=&#34;https://shi1iu.github.io/p/assets/image-20260318142921431_hu4769177238163441784.png 480w, https://shi1iu.github.io/p/assets/image-20260318142921431_hu2514960359255454095.png 1024w&#34;
+	srcset=&#34;https://shi1iu.github.io/p/%E8%AE%BE%E5%A4%87%E6%A0%91overlay%E4%BB%8B%E7%BB%8D/assets/image-20260318142921431_hu4769177238163441784.png 480w, https://shi1iu.github.io/p/%E8%AE%BE%E5%A4%87%E6%A0%91overlay%E4%BB%8B%E7%BB%8D/assets/image-20260318142921431_hu2514960359255454095.png 1024w&#34;
 	loading=&#34;lazy&#34;
 	
 		alt=&#34;image-20260318142921431&#34;
@@ -250,10 +504,10 @@
 &lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 &lt;/div&gt;
 &lt;/div&gt;&lt;p&gt;把makefile这里关了就好了&lt;/p&gt;
-&lt;p&gt;&lt;img src=&#34;https://shi1iu.github.io/p/assets/image-20260319200547463.png&#34;
+&lt;p&gt;&lt;img src=&#34;https://shi1iu.github.io/p/%E8%AE%BE%E5%A4%87%E6%A0%91overlay%E4%BB%8B%E7%BB%8D/assets/image-20260319200547463.png&#34;
 	width=&#34;737&#34;
 	height=&#34;514&#34;
-	srcset=&#34;https://shi1iu.github.io/p/assets/image-20260319200547463_hu10261175103492508619.png 480w, https://shi1iu.github.io/p/assets/image-20260319200547463_hu5986536047528398191.png 1024w&#34;
+	srcset=&#34;https://shi1iu.github.io/p/%E8%AE%BE%E5%A4%87%E6%A0%91overlay%E4%BB%8B%E7%BB%8D/assets/image-20260319200547463_hu10261175103492508619.png 480w, https://shi1iu.github.io/p/%E8%AE%BE%E5%A4%87%E6%A0%91overlay%E4%BB%8B%E7%BB%8D/assets/image-20260319200547463_hu5986536047528398191.png 1024w&#34;
 	loading=&#34;lazy&#34;
 	
 		alt=&#34;image-20260319200547463&#34;
@@ -282,10 +536,10 @@
 &lt;/div&gt;&lt;p&gt;这里告诉我的内核没有配置CONFIG_CONFIGFS_FS。我裂开了。明天继续把，已经下班了；&lt;/p&gt;
 &lt;p&gt;现在是紧张刺激的第二天 :)&lt;/p&gt;
 &lt;p&gt;注意事项：为了保证配置环境在以前的基础上叠加，需要将开发板里的config.gz拷贝到虚拟机中的内核目录（交叉编译环境）并修改名为.config，重新加载即可&lt;/p&gt;
-&lt;p&gt;&lt;img src=&#34;https://shi1iu.github.io/p/assets/image-20260320095347479.png&#34;
+&lt;p&gt;&lt;img src=&#34;https://shi1iu.github.io/p/%E8%AE%BE%E5%A4%87%E6%A0%91overlay%E4%BB%8B%E7%BB%8D/assets/image-20260320095347479.png&#34;
 	width=&#34;638&#34;
 	height=&#34;279&#34;
-	srcset=&#34;https://shi1iu.github.io/p/assets/image-20260320095347479_hu4489026057948811210.png 480w, https://shi1iu.github.io/p/assets/image-20260320095347479_hu3883634799850931563.png 1024w&#34;
+	srcset=&#34;https://shi1iu.github.io/p/%E8%AE%BE%E5%A4%87%E6%A0%91overlay%E4%BB%8B%E7%BB%8D/assets/image-20260320095347479_hu4489026057948811210.png 480w, https://shi1iu.github.io/p/%E8%AE%BE%E5%A4%87%E6%A0%91overlay%E4%BB%8B%E7%BB%8D/assets/image-20260320095347479_hu3883634799850931563.png 1024w&#34;
 	loading=&#34;lazy&#34;
 	
 		alt=&#34;image-20260320095347479&#34;
@@ -298,10 +552,10 @@
 &gt;&lt;/p&gt;
 &lt;p&gt;文件位置如上图所示。&lt;/p&gt;
 &lt;p&gt;配置下面的设置&lt;/p&gt;
-&lt;p&gt;&lt;img src=&#34;https://shi1iu.github.io/p/assets/image-20260320094637107.png&#34;
+&lt;p&gt;&lt;img src=&#34;https://shi1iu.github.io/p/%E8%AE%BE%E5%A4%87%E6%A0%91overlay%E4%BB%8B%E7%BB%8D/assets/image-20260320094637107.png&#34;
 	width=&#34;1405&#34;
 	height=&#34;318&#34;
-	srcset=&#34;https://shi1iu.github.io/p/assets/image-20260320094637107_hu13245831944793442844.png 480w, https://shi1iu.github.io/p/assets/image-20260320094637107_hu12338459554422510469.png 1024w&#34;
+	srcset=&#34;https://shi1iu.github.io/p/%E8%AE%BE%E5%A4%87%E6%A0%91overlay%E4%BB%8B%E7%BB%8D/assets/image-20260320094637107_hu13245831944793442844.png 480w, https://shi1iu.github.io/p/%E8%AE%BE%E5%A4%87%E6%A0%91overlay%E4%BB%8B%E7%BB%8D/assets/image-20260320094637107_hu12338459554422510469.png 1024w&#34;
 	loading=&#34;lazy&#34;
 	
 		alt=&#34;image-20260320094637107&#34;
@@ -313,10 +567,10 @@
 	
 &gt;&lt;/p&gt;
 &lt;p&gt;重新修改内核并加载内核后&lt;/p&gt;
-&lt;p&gt;&lt;img src=&#34;https://shi1iu.github.io/p/assets/image-20260320094744140.png&#34;
+&lt;p&gt;&lt;img src=&#34;https://shi1iu.github.io/p/%E8%AE%BE%E5%A4%87%E6%A0%91overlay%E4%BB%8B%E7%BB%8D/assets/image-20260320094744140.png&#34;
 	width=&#34;678&#34;
 	height=&#34;68&#34;
-	srcset=&#34;https://shi1iu.github.io/p/assets/image-20260320094744140_hu4244668316256316411.png 480w, https://shi1iu.github.io/p/assets/image-20260320094744140_hu14910605004427504106.png 1024w&#34;
+	srcset=&#34;https://shi1iu.github.io/p/%E8%AE%BE%E5%A4%87%E6%A0%91overlay%E4%BB%8B%E7%BB%8D/assets/image-20260320094744140_hu4244668316256316411.png 480w, https://shi1iu.github.io/p/%E8%AE%BE%E5%A4%87%E6%A0%91overlay%E4%BB%8B%E7%BB%8D/assets/image-20260320094744140_hu14910605004427504106.png 1024w&#34;
 	loading=&#34;lazy&#34;
 	
 		alt=&#34;image-20260320094744140&#34;

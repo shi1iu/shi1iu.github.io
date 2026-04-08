@@ -2,18 +2,18 @@
 <html lang="zh-cn" dir="ltr">
     <head><meta charset='utf-8'>
 <meta name='viewport' content='width=device-width, initial-scale=1'><meta name='description' content="设备树overlay相关的知识学习">
-<title></title>
+<title>设备树overlay介绍</title>
 
-<link rel='canonical' href='https://shi1iu.github.io/p/'>
+<link rel='canonical' href='https://shi1iu.github.io/p/%E8%AE%BE%E5%A4%87%E6%A0%91overlay%E4%BB%8B%E7%BB%8D/'>
 
-<link rel="stylesheet" href="/scss/style.min.0304c6baf04e01a8fe70693791cb744d56a3578a3120a8796cefc66825aa39c7.css"><meta property='og:title' content="">
+<link rel="stylesheet" href="/scss/style.min.0304c6baf04e01a8fe70693791cb744d56a3578a3120a8796cefc66825aa39c7.css"><meta property='og:title' content="设备树overlay介绍">
 <meta property='og:description' content="设备树overlay相关的知识学习">
-<meta property='og:url' content='https://shi1iu.github.io/p/'>
+<meta property='og:url' content='https://shi1iu.github.io/p/%E8%AE%BE%E5%A4%87%E6%A0%91overlay%E4%BB%8B%E7%BB%8D/'>
 <meta property='og:site_name' content='shi1iu'>
-<meta property='og:type' content='article'><meta property='article:section' content='Post' /><meta property='article:published_time' content='2026-03-31T00:00:00&#43;00:00'/><meta property='article:modified_time' content='2026-03-31T00:00:00&#43;00:00'/><meta property='og:image' content='https://shi1iu.github.io/p/rixi.jpg' />
-<meta name="twitter:title" content="">
+<meta property='og:type' content='article'><meta property='article:section' content='Post' /><meta property='article:published_time' content='2026-03-31T00:00:00&#43;00:00'/><meta property='article:modified_time' content='2026-03-31T00:00:00&#43;00:00'/><meta property='og:image' content='https://shi1iu.github.io/p/%E8%AE%BE%E5%A4%87%E6%A0%91overlay%E4%BB%8B%E7%BB%8D/rixi.jpg' />
+<meta name="twitter:title" content="设备树overlay介绍">
 <meta name="twitter:description" content="设备树overlay相关的知识学习"><meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:image" content='https://shi1iu.github.io/p/rixi.jpg' />
+    <meta name="twitter:image" content='https://shi1iu.github.io/p/%E8%AE%BE%E5%A4%87%E6%A0%91overlay%E4%BB%8B%E7%BB%8D/rixi.jpg' />
     <link rel="shortcut icon" href="/favicon.ico" />
 
   
@@ -315,13 +315,13 @@
     <article class="has-image main-article">
     <header class="article-header">
         <div class="article-image">
-            <a href="/p/">
-                <img src="/p/rixi_hu11050742636954261169.jpg"
-                        srcset="/p/rixi_hu11050742636954261169.jpg 800w, /p/rixi_hu13059559179738420507.jpg 1600w"
+            <a href="/p/%E8%AE%BE%E5%A4%87%E6%A0%91overlay%E4%BB%8B%E7%BB%8D/">
+                <img src="/p/%E8%AE%BE%E5%A4%87%E6%A0%91overlay%E4%BB%8B%E7%BB%8D/rixi_hu11050742636954261169.jpg"
+                        srcset="/p/%E8%AE%BE%E5%A4%87%E6%A0%91overlay%E4%BB%8B%E7%BB%8D/rixi_hu11050742636954261169.jpg 800w, /p/%E8%AE%BE%E5%A4%87%E6%A0%91overlay%E4%BB%8B%E7%BB%8D/rixi_hu13059559179738420507.jpg 1600w"
                         width="800" 
                         height="643" 
                         loading="lazy"
-                        alt="Featured image of post " />
+                        alt="Featured image of post 设备树overlay介绍" />
                 
             </a>
         </div>
@@ -344,7 +344,7 @@
 
     <div class="article-title-wrapper">
         <h2 class="article-title">
-            <a href="/p/"></a>
+            <a href="/p/%E8%AE%BE%E5%A4%87%E6%A0%91overlay%E4%BB%8B%E7%BB%8D/">设备树overlay介绍</a>
         </h2>
     
         
@@ -391,10 +391,10 @@
 </h2><p>​	在使用NVIDIA Jetson Nano Developer Kit开发过程中，想对gpio12进行pwm输出，在不知道gpio12的配置的时候，并且我不知道Linux内核版本的情况下，反汇编得到了起始的设备树dts文件。后来，我得知在nvida ////sudo /opt/nvidia/jetson-io/jetson-io.py下可进行图形化配置，在论坛得知可以通过**配置工具 (jetson-io)**进行配置。我的猜想是它会重新编译在/boot/下的设备树，可是反汇编后发现并没有改变，和原来反汇编的结果是一样的。</p>
 <h2 id="研究过程">研究过程
 </h2><p>​	查阅资料发现，在配置使用jetson-io的情况下，并不会改变原始的设备树文件，而是通过生成一个或者多个增量式的配置文件，即设备树插件（Device Tree Overlay，文件后缀为.dtbo）</p>
-<p><img src="/p/assets/image-20260318142921431.png"
+<p><img src="/p/%E8%AE%BE%E5%A4%87%E6%A0%91overlay%E4%BB%8B%E7%BB%8D/assets/image-20260318142921431.png"
 	width="543"
 	height="901"
-	srcset="/p/assets/image-20260318142921431_hu4769177238163441784.png 480w, /p/assets/image-20260318142921431_hu2514960359255454095.png 1024w"
+	srcset="/p/%E8%AE%BE%E5%A4%87%E6%A0%91overlay%E4%BB%8B%E7%BB%8D/assets/image-20260318142921431_hu4769177238163441784.png 480w, /p/%E8%AE%BE%E5%A4%87%E6%A0%91overlay%E4%BB%8B%E7%BB%8D/assets/image-20260318142921431_hu2514960359255454095.png 1024w"
 	loading="lazy"
 	
 		alt="image-20260318142921431"
@@ -623,10 +623,10 @@
 </span></span></code></pre></td></tr></table>
 </div>
 </div><p>把makefile这里关了就好了</p>
-<p><img src="/p/assets/image-20260319200547463.png"
+<p><img src="/p/%E8%AE%BE%E5%A4%87%E6%A0%91overlay%E4%BB%8B%E7%BB%8D/assets/image-20260319200547463.png"
 	width="737"
 	height="514"
-	srcset="/p/assets/image-20260319200547463_hu10261175103492508619.png 480w, /p/assets/image-20260319200547463_hu5986536047528398191.png 1024w"
+	srcset="/p/%E8%AE%BE%E5%A4%87%E6%A0%91overlay%E4%BB%8B%E7%BB%8D/assets/image-20260319200547463_hu10261175103492508619.png 480w, /p/%E8%AE%BE%E5%A4%87%E6%A0%91overlay%E4%BB%8B%E7%BB%8D/assets/image-20260319200547463_hu5986536047528398191.png 1024w"
 	loading="lazy"
 	
 		alt="image-20260319200547463"
@@ -655,10 +655,10 @@
 </div><p>这里告诉我的内核没有配置CONFIG_CONFIGFS_FS。我裂开了。明天继续把，已经下班了；</p>
 <p>现在是紧张刺激的第二天 :)</p>
 <p>注意事项：为了保证配置环境在以前的基础上叠加，需要将开发板里的config.gz拷贝到虚拟机中的内核目录（交叉编译环境）并修改名为.config，重新加载即可</p>
-<p><img src="/p/assets/image-20260320095347479.png"
+<p><img src="/p/%E8%AE%BE%E5%A4%87%E6%A0%91overlay%E4%BB%8B%E7%BB%8D/assets/image-20260320095347479.png"
 	width="638"
 	height="279"
-	srcset="/p/assets/image-20260320095347479_hu4489026057948811210.png 480w, /p/assets/image-20260320095347479_hu3883634799850931563.png 1024w"
+	srcset="/p/%E8%AE%BE%E5%A4%87%E6%A0%91overlay%E4%BB%8B%E7%BB%8D/assets/image-20260320095347479_hu4489026057948811210.png 480w, /p/%E8%AE%BE%E5%A4%87%E6%A0%91overlay%E4%BB%8B%E7%BB%8D/assets/image-20260320095347479_hu3883634799850931563.png 1024w"
 	loading="lazy"
 	
 		alt="image-20260320095347479"
@@ -671,10 +671,10 @@
 ></p>
 <p>文件位置如上图所示。</p>
 <p>配置下面的设置</p>
-<p><img src="/p/assets/image-20260320094637107.png"
+<p><img src="/p/%E8%AE%BE%E5%A4%87%E6%A0%91overlay%E4%BB%8B%E7%BB%8D/assets/image-20260320094637107.png"
 	width="1405"
 	height="318"
-	srcset="/p/assets/image-20260320094637107_hu13245831944793442844.png 480w, /p/assets/image-20260320094637107_hu12338459554422510469.png 1024w"
+	srcset="/p/%E8%AE%BE%E5%A4%87%E6%A0%91overlay%E4%BB%8B%E7%BB%8D/assets/image-20260320094637107_hu13245831944793442844.png 480w, /p/%E8%AE%BE%E5%A4%87%E6%A0%91overlay%E4%BB%8B%E7%BB%8D/assets/image-20260320094637107_hu12338459554422510469.png 1024w"
 	loading="lazy"
 	
 		alt="image-20260320094637107"
@@ -686,10 +686,10 @@
 	
 ></p>
 <p>重新修改内核并加载内核后</p>
-<p><img src="/p/assets/image-20260320094744140.png"
+<p><img src="/p/%E8%AE%BE%E5%A4%87%E6%A0%91overlay%E4%BB%8B%E7%BB%8D/assets/image-20260320094744140.png"
 	width="678"
 	height="68"
-	srcset="/p/assets/image-20260320094744140_hu4244668316256316411.png 480w, /p/assets/image-20260320094744140_hu14910605004427504106.png 1024w"
+	srcset="/p/%E8%AE%BE%E5%A4%87%E6%A0%91overlay%E4%BB%8B%E7%BB%8D/assets/image-20260320094744140_hu4244668316256316411.png 480w, /p/%E8%AE%BE%E5%A4%87%E6%A0%91overlay%E4%BB%8B%E7%BB%8D/assets/image-20260320094744140_hu14910605004427504106.png 1024w"
 	loading="lazy"
 	
 		alt="image-20260320094744140"
@@ -760,6 +760,30 @@
     <h2 class="section-title">相关文章</h2>
     <div class="related-content">
         <div class="flex article-list--tile">
+            
+                
+<article class="has-image">
+    <a href="/p/nvidia-jetson-nano-linux%E4%B8%8Bpwm%E4%BD%BF%E7%94%A8%E9%97%AE%E9%A2%98/">
+        
+        
+            <div class="article-image">
+                <img src="/p/nvidia-jetson-nano-linux%E4%B8%8Bpwm%E4%BD%BF%E7%94%A8%E9%97%AE%E9%A2%98/mubiao.a21f7c8bf5a2ab47569521d88aacbe47_hu16760951861553960523.jpg" 
+                        width="250" 
+                        height="150" 
+                        loading="lazy"
+                        alt="Featured image of post NVIDIA Jetson Nano Linux下pwm使用问题"
+                        
+                        data-hash="md5-oh98i/Wiq0dWlSHYiqy&#43;Rw==">
+                
+            </div>
+        
+
+        <div class="article-details">
+            <h2 class="article-title">NVIDIA Jetson Nano Linux下pwm使用问题</h2>
+        </div>
+    </a>
+</article>
+
             
                 
 <article class="has-image">

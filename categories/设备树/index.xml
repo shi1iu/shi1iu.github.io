@@ -8,20 +8,20 @@
         <language>zh-cn</language>
         <copyright>shi1iu</copyright>
         <lastBuildDate>Tue, 31 Mar 2026 00:00:00 +0000</lastBuildDate><atom:link href="https://shi1iu.github.io/categories/%E8%AE%BE%E5%A4%87%E6%A0%91/index.xml" rel="self" type="application/rss+xml" /><item>
-        <title></title>
-        <link>https://shi1iu.github.io/p/</link>
+        <title>设备树overlay介绍</title>
+        <link>https://shi1iu.github.io/p/%E8%AE%BE%E5%A4%87%E6%A0%91overlay%E4%BB%8B%E7%BB%8D/</link>
         <pubDate>Tue, 31 Mar 2026 00:00:00 +0000</pubDate>
         
-        <guid>https://shi1iu.github.io/p/</guid>
-        <description>&lt;img src="https://shi1iu.github.io/p/rixi.jpg" alt="Featured image of post " /&gt;&lt;p&gt;&lt;strong&gt;主要阐述说明了自己的学习过程，因为自己的问题还没弄好&lt;/strong&gt;&lt;/p&gt;
+        <guid>https://shi1iu.github.io/p/%E8%AE%BE%E5%A4%87%E6%A0%91overlay%E4%BB%8B%E7%BB%8D/</guid>
+        <description>&lt;img src="https://shi1iu.github.io/p/%E8%AE%BE%E5%A4%87%E6%A0%91overlay%E4%BB%8B%E7%BB%8D/rixi.jpg" alt="Featured image of post 设备树overlay介绍" /&gt;&lt;p&gt;&lt;strong&gt;主要阐述说明了自己的学习过程，因为自己的问题还没弄好&lt;/strong&gt;&lt;/p&gt;
 &lt;h2 id=&#34;背景&#34;&gt;背景
 &lt;/h2&gt;&lt;p&gt;​	在使用NVIDIA Jetson Nano Developer Kit开发过程中，想对gpio12进行pwm输出，在不知道gpio12的配置的时候，并且我不知道Linux内核版本的情况下，反汇编得到了起始的设备树dts文件。后来，我得知在nvida ////sudo /opt/nvidia/jetson-io/jetson-io.py下可进行图形化配置，在论坛得知可以通过**配置工具 (jetson-io)**进行配置。我的猜想是它会重新编译在/boot/下的设备树，可是反汇编后发现并没有改变，和原来反汇编的结果是一样的。&lt;/p&gt;
 &lt;h2 id=&#34;研究过程&#34;&gt;研究过程
 &lt;/h2&gt;&lt;p&gt;​	查阅资料发现，在配置使用jetson-io的情况下，并不会改变原始的设备树文件，而是通过生成一个或者多个增量式的配置文件，即设备树插件（Device Tree Overlay，文件后缀为.dtbo）&lt;/p&gt;
-&lt;p&gt;&lt;img src=&#34;https://shi1iu.github.io/p/assets/image-20260318142921431.png&#34;
+&lt;p&gt;&lt;img src=&#34;https://shi1iu.github.io/p/%E8%AE%BE%E5%A4%87%E6%A0%91overlay%E4%BB%8B%E7%BB%8D/assets/image-20260318142921431.png&#34;
 	width=&#34;543&#34;
 	height=&#34;901&#34;
-	srcset=&#34;https://shi1iu.github.io/p/assets/image-20260318142921431_hu4769177238163441784.png 480w, https://shi1iu.github.io/p/assets/image-20260318142921431_hu2514960359255454095.png 1024w&#34;
+	srcset=&#34;https://shi1iu.github.io/p/%E8%AE%BE%E5%A4%87%E6%A0%91overlay%E4%BB%8B%E7%BB%8D/assets/image-20260318142921431_hu4769177238163441784.png 480w, https://shi1iu.github.io/p/%E8%AE%BE%E5%A4%87%E6%A0%91overlay%E4%BB%8B%E7%BB%8D/assets/image-20260318142921431_hu2514960359255454095.png 1024w&#34;
 	loading=&#34;lazy&#34;
 	
 		alt=&#34;image-20260318142921431&#34;
@@ -250,10 +250,10 @@
 &lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 &lt;/div&gt;
 &lt;/div&gt;&lt;p&gt;把makefile这里关了就好了&lt;/p&gt;
-&lt;p&gt;&lt;img src=&#34;https://shi1iu.github.io/p/assets/image-20260319200547463.png&#34;
+&lt;p&gt;&lt;img src=&#34;https://shi1iu.github.io/p/%E8%AE%BE%E5%A4%87%E6%A0%91overlay%E4%BB%8B%E7%BB%8D/assets/image-20260319200547463.png&#34;
 	width=&#34;737&#34;
 	height=&#34;514&#34;
-	srcset=&#34;https://shi1iu.github.io/p/assets/image-20260319200547463_hu10261175103492508619.png 480w, https://shi1iu.github.io/p/assets/image-20260319200547463_hu5986536047528398191.png 1024w&#34;
+	srcset=&#34;https://shi1iu.github.io/p/%E8%AE%BE%E5%A4%87%E6%A0%91overlay%E4%BB%8B%E7%BB%8D/assets/image-20260319200547463_hu10261175103492508619.png 480w, https://shi1iu.github.io/p/%E8%AE%BE%E5%A4%87%E6%A0%91overlay%E4%BB%8B%E7%BB%8D/assets/image-20260319200547463_hu5986536047528398191.png 1024w&#34;
 	loading=&#34;lazy&#34;
 	
 		alt=&#34;image-20260319200547463&#34;
@@ -282,10 +282,10 @@
 &lt;/div&gt;&lt;p&gt;这里告诉我的内核没有配置CONFIG_CONFIGFS_FS。我裂开了。明天继续把，已经下班了；&lt;/p&gt;
 &lt;p&gt;现在是紧张刺激的第二天 :)&lt;/p&gt;
 &lt;p&gt;注意事项：为了保证配置环境在以前的基础上叠加，需要将开发板里的config.gz拷贝到虚拟机中的内核目录（交叉编译环境）并修改名为.config，重新加载即可&lt;/p&gt;
-&lt;p&gt;&lt;img src=&#34;https://shi1iu.github.io/p/assets/image-20260320095347479.png&#34;
+&lt;p&gt;&lt;img src=&#34;https://shi1iu.github.io/p/%E8%AE%BE%E5%A4%87%E6%A0%91overlay%E4%BB%8B%E7%BB%8D/assets/image-20260320095347479.png&#34;
 	width=&#34;638&#34;
 	height=&#34;279&#34;
-	srcset=&#34;https://shi1iu.github.io/p/assets/image-20260320095347479_hu4489026057948811210.png 480w, https://shi1iu.github.io/p/assets/image-20260320095347479_hu3883634799850931563.png 1024w&#34;
+	srcset=&#34;https://shi1iu.github.io/p/%E8%AE%BE%E5%A4%87%E6%A0%91overlay%E4%BB%8B%E7%BB%8D/assets/image-20260320095347479_hu4489026057948811210.png 480w, https://shi1iu.github.io/p/%E8%AE%BE%E5%A4%87%E6%A0%91overlay%E4%BB%8B%E7%BB%8D/assets/image-20260320095347479_hu3883634799850931563.png 1024w&#34;
 	loading=&#34;lazy&#34;
 	
 		alt=&#34;image-20260320095347479&#34;
@@ -298,10 +298,10 @@
 &gt;&lt;/p&gt;
 &lt;p&gt;文件位置如上图所示。&lt;/p&gt;
 &lt;p&gt;配置下面的设置&lt;/p&gt;
-&lt;p&gt;&lt;img src=&#34;https://shi1iu.github.io/p/assets/image-20260320094637107.png&#34;
+&lt;p&gt;&lt;img src=&#34;https://shi1iu.github.io/p/%E8%AE%BE%E5%A4%87%E6%A0%91overlay%E4%BB%8B%E7%BB%8D/assets/image-20260320094637107.png&#34;
 	width=&#34;1405&#34;
 	height=&#34;318&#34;
-	srcset=&#34;https://shi1iu.github.io/p/assets/image-20260320094637107_hu13245831944793442844.png 480w, https://shi1iu.github.io/p/assets/image-20260320094637107_hu12338459554422510469.png 1024w&#34;
+	srcset=&#34;https://shi1iu.github.io/p/%E8%AE%BE%E5%A4%87%E6%A0%91overlay%E4%BB%8B%E7%BB%8D/assets/image-20260320094637107_hu13245831944793442844.png 480w, https://shi1iu.github.io/p/%E8%AE%BE%E5%A4%87%E6%A0%91overlay%E4%BB%8B%E7%BB%8D/assets/image-20260320094637107_hu12338459554422510469.png 1024w&#34;
 	loading=&#34;lazy&#34;
 	
 		alt=&#34;image-20260320094637107&#34;
@@ -313,10 +313,10 @@
 	
 &gt;&lt;/p&gt;
 &lt;p&gt;重新修改内核并加载内核后&lt;/p&gt;
-&lt;p&gt;&lt;img src=&#34;https://shi1iu.github.io/p/assets/image-20260320094744140.png&#34;
+&lt;p&gt;&lt;img src=&#34;https://shi1iu.github.io/p/%E8%AE%BE%E5%A4%87%E6%A0%91overlay%E4%BB%8B%E7%BB%8D/assets/image-20260320094744140.png&#34;
 	width=&#34;678&#34;
 	height=&#34;68&#34;
-	srcset=&#34;https://shi1iu.github.io/p/assets/image-20260320094744140_hu4244668316256316411.png 480w, https://shi1iu.github.io/p/assets/image-20260320094744140_hu14910605004427504106.png 1024w&#34;
+	srcset=&#34;https://shi1iu.github.io/p/%E8%AE%BE%E5%A4%87%E6%A0%91overlay%E4%BB%8B%E7%BB%8D/assets/image-20260320094744140_hu4244668316256316411.png 480w, https://shi1iu.github.io/p/%E8%AE%BE%E5%A4%87%E6%A0%91overlay%E4%BB%8B%E7%BB%8D/assets/image-20260320094744140_hu14910605004427504106.png 1024w&#34;
 	loading=&#34;lazy&#34;
 	
 		alt=&#34;image-20260320094744140&#34;
