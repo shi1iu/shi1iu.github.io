@@ -1,0 +1,1099 @@
+<!DOCTYPE html>
+<html lang="zh-cn" dir="ltr">
+    <head><meta charset='utf-8'>
+<meta name='viewport' content='width=device-width, initial-scale=1'><meta name='description' content="描述">
+<title>I2C驱动eeprom</title>
+
+<link rel='canonical' href='https://shi1iu.github.io/p/i2c%E9%A9%B1%E5%8A%A8eeprom/'>
+
+<link rel="stylesheet" href="/scss/style.min.0304c6baf04e01a8fe70693791cb744d56a3578a3120a8796cefc66825aa39c7.css"><meta property='og:title' content="I2C驱动eeprom">
+<meta property='og:description' content="描述">
+<meta property='og:url' content='https://shi1iu.github.io/p/i2c%E9%A9%B1%E5%8A%A8eeprom/'>
+<meta property='og:site_name' content='shi1iu'>
+<meta property='og:type' content='article'><meta property='article:section' content='Post' /><meta property='article:published_time' content='2026-05-21T00:00:00&#43;00:00'/><meta property='article:modified_time' content='2026-05-21T00:00:00&#43;00:00'/><meta property='og:image' content='https://shi1iu.github.io/p/i2c%E9%A9%B1%E5%8A%A8eeprom/wo.jpg' />
+<meta name="twitter:title" content="I2C驱动eeprom">
+<meta name="twitter:description" content="描述"><meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:image" content='https://shi1iu.github.io/p/i2c%E9%A9%B1%E5%8A%A8eeprom/wo.jpg' />
+    <link rel="shortcut icon" href="/favicon.ico" />
+
+  
+
+
+  <link rel="stylesheet" href="/css/chroma.min.css">
+
+    </head>
+    <body class="
+    article-page
+    ">
+    <script>
+        (function() {
+            const colorSchemeKey = 'StackColorScheme';
+            if(!localStorage.getItem(colorSchemeKey)){
+                localStorage.setItem(colorSchemeKey, "auto");
+            }
+        })();
+    </script><script>
+    (function() {
+        const colorSchemeKey = 'StackColorScheme';
+        const colorSchemeItem = localStorage.getItem(colorSchemeKey);
+        const supportDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches === true;
+
+        if (colorSchemeItem == 'dark' || colorSchemeItem === 'auto' && supportDarkMode) {
+            
+
+            document.documentElement.dataset.scheme = 'dark';
+        } else {
+            document.documentElement.dataset.scheme = 'light';
+        }
+    })();
+</script>
+<div class="container main-container flex on-phone--column extended"><aside class="sidebar left-sidebar sticky ">
+    <button class="hamburger hamburger--spin" type="button" id="toggle-menu" aria-label="切换菜单">
+        <span class="hamburger-box">
+            <span class="hamburger-inner"></span>
+        </span>
+    </button>
+
+    <header>
+        
+            
+            <figure class="site-avatar">
+                <a href="/">
+                
+                    
+                    
+                    
+                        
+                        <img src="/img/avatar_hu17971763332595127852.png" width="300"
+                            height="300" class="site-logo" loading="lazy" alt="Avatar">
+                    
+                
+                </a>
+                
+                    <span class="emoji">🍥</span>
+                
+            </figure>
+            
+        
+        
+        <div class="site-meta">
+            <h1 class="site-name"><a href="/">shi1iu</a></h1>
+            <h2 class="site-description">分享学习嵌入式Linux、MCU、RTOS、驱动开发、C/C&#43;&#43;等笔记与项目经验</h2>
+        </div>
+    </header><ol class="menu-social">
+            
+                <li>
+                    <a 
+                        href='https://github.com/shi1iu'
+                        target="_blank"
+                        title="GitHub"
+                        rel="me"
+                    >
+                        
+                        
+                            <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-brand-github" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+  <path d="M9 19c-4.3 1.4 -4.3 -2.5 -6 -3m12 5v-3.5c0 -1 .1 -1.4 -.5 -2c2.8 -.3 5.5 -1.4 5.5 -6a4.6 4.6 0 0 0 -1.3 -3.2a4.2 4.2 0 0 0 -.1 -3.2s-1.1 -.3 -3.5 1.3a12.3 12.3 0 0 0 -6.2 0c-2.4 -1.6 -3.5 -1.3 -3.5 -1.3a4.2 4.2 0 0 0 -.1 3.2a4.6 4.6 0 0 0 -1.3 3.2c0 4.6 2.7 5.7 5.5 6c-.6 .6 -.6 1.2 -.5 2v3.5" />
+</svg>
+
+
+
+                        
+                    </a>
+                </li>
+            
+                <li>
+                    <a 
+                        href='https://twitter.com'
+                        target="_blank"
+                        title="Twitter"
+                        rel="me"
+                    >
+                        
+                        
+                            <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-brand-twitter" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+  <path d="M22 4.01c-1 .49 -1.98 .689 -3 .99c-1.121 -1.265 -2.783 -1.335 -4.38 -.737s-2.643 2.06 -2.62 3.737v1c-3.245 .083 -6.135 -1.395 -8 -4c0 0 -4.182 7.433 4 11c-1.872 1.247 -3.739 2.088 -6 2c3.308 1.803 6.913 2.423 10.034 1.517c3.58 -1.04 6.522 -3.723 7.651 -7.742a13.84 13.84 0 0 0 .497 -3.753c-.002 -.249 1.51 -2.772 1.818 -4.013z" />
+</svg>
+
+
+
+                        
+                    </a>
+                </li>
+            
+        </ol><ol class="menu" id="main-menu">
+        
+        
+        
+        <li >
+            <a href='/' >
+                
+                
+                
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-home" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <polyline points="5 12 3 12 12 3 21 12 19 12" />
+  <path d="M5 12v7a2 2 0 0 0 2 2h10a2 2 0 0 0 2 -2v-7" />
+  <path d="M9 21v-6a2 2 0 0 1 2 -2h2a2 2 0 0 1 2 2v6" />
+</svg>
+
+
+
+                
+                <span>主页</span>
+            </a>
+        </li>
+        
+        
+        <li >
+            <a href='/%E5%85%B3%E4%BA%8E/' >
+                
+                
+                
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-user" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="12" cy="7" r="4" />
+  <path d="M6 21v-2a4 4 0 0 1 4 -4h4a4 4 0 0 1 4 4v2" />
+</svg>
+
+
+
+                
+                <span>关于</span>
+            </a>
+        </li>
+        
+        
+        <li >
+            <a href='/archives/' >
+                
+                
+                
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-archive" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <rect x="3" y="4" width="18" height="4" rx="2" />
+  <path d="M5 8v10a2 2 0 0 0 2 2h10a2 2 0 0 0 2 -2v-10" />
+  <line x1="10" y1="12" x2="14" y2="12" />
+</svg>
+
+
+
+                
+                <span>归档</span>
+            </a>
+        </li>
+        
+        
+        <li >
+            <a href='/search/' >
+                
+                
+                
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-search" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="10" cy="10" r="7" />
+  <line x1="21" y1="21" x2="15" y2="15" />
+</svg>
+
+
+
+                
+                <span>搜索</span>
+            </a>
+        </li>
+        
+        
+        <li >
+            <a href='/%E5%8F%8B%E6%83%85%E9%93%BE%E6%8E%A5/' >
+                
+                
+                
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-link" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <path d="M10 14a3.5 3.5 0 0 0 5 0l4 -4a3.5 3.5 0 0 0 -5 -5l-.5 .5" />
+  <path d="M14 10a3.5 3.5 0 0 0 -5 0l-4 4a3.5 3.5 0 0 0 5 5l.5 -.5" />
+</svg>
+
+
+
+                
+                <span>友情链接</span>
+            </a>
+        </li>
+        
+        <li class="menu-bottom-section">
+            <ol class="menu">
+                    
+                        <li id="i18n-switch">  
+                            <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-language" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+  <path d="M4 5h7" />
+  <path d="M9 3v2c0 4.418 -2.239 8 -5 8" />
+  <path d="M5 9c-.003 2.144 2.952 3.908 6.7 4" />
+  <path d="M12 20l4 -9l4 9" />
+  <path d="M19.1 18h-6.2" />
+</svg>
+
+
+
+                            <select name="language" title="language" onchange="window.location.href = this.selectedOptions[0].value">
+                                
+                                    <option value="https://shi1iu.github.io/" selected>简体中文</option>
+                                
+                                    <option value="https://shi1iu.github.io/en/" >English</option>
+                                
+                                    <option value="https://shi1iu.github.io/ar/" >عربي</option>
+                                
+                            </select>
+                        </li>
+                    
+                
+
+                
+                    <li id="dark-mode-toggle">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-toggle-left" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="8" cy="12" r="2" />
+  <rect x="2" y="6" width="20" height="12" rx="6" />
+</svg>
+
+
+
+                        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-toggle-right" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="16" cy="12" r="2" />
+  <rect x="2" y="6" width="20" height="12" rx="6" />
+</svg>
+
+
+
+                        <span>暗色模式</span>
+                    </li>
+                
+            </ol>
+        </li>
+    </ol>
+</aside>
+
+    <aside class="sidebar right-sidebar sticky">
+        
+            
+                
+    <section class="widget archives">
+        <div class="widget-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-hash" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <line x1="5" y1="9" x2="19" y2="9" />
+  <line x1="5" y1="15" x2="19" y2="15" />
+  <line x1="11" y1="4" x2="7" y2="20" />
+  <line x1="17" y1="4" x2="13" y2="20" />
+</svg>
+
+
+
+        </div>
+        <h2 class="widget-title section-title">目录</h2>
+        
+        <div class="widget--toc">
+            <nav id="TableOfContents">
+  <ol>
+    <li><a href="#heading"></a></li>
+    <li><a href="#stm32中使用i2c驱动eeprom读写">STM32中使用I2C驱动EEPROM读写</a>
+      <ol>
+        <li><a href="#背景需求">背景&amp;需求</a></li>
+        <li><a href="#手册">手册</a></li>
+        <li><a href="#过程">过程</a></li>
+        <li><a href="#问题">问题</a></li>
+      </ol>
+    </li>
+  </ol>
+</nav>
+        </div>
+    </section>
+
+            
+        
+    </aside>
+
+
+            <main class="main full-width">
+    <article class="has-image main-article">
+    <header class="article-header">
+        <div class="article-image">
+            <a href="/p/i2c%E9%A9%B1%E5%8A%A8eeprom/">
+                <img src="/p/i2c%E9%A9%B1%E5%8A%A8eeprom/wo_hu1644113860932226664.jpg"
+                        srcset="/p/i2c%E9%A9%B1%E5%8A%A8eeprom/wo_hu1644113860932226664.jpg 800w, /p/i2c%E9%A9%B1%E5%8A%A8eeprom/wo_hu2124101509558713463.jpg 1600w"
+                        width="800" 
+                        height="1067" 
+                        loading="lazy"
+                        alt="Featured image of post I2C驱动eeprom" />
+                
+            </a>
+        </div>
+    
+
+    <div class="article-details">
+    
+    <header class="article-category">
+        
+            <a href="/categories/stm32/" >
+                STM32
+            </a>
+        
+            <a href="/categories/i2c/" >
+                I2C
+            </a>
+        
+    </header>
+    
+
+    <div class="article-title-wrapper">
+        <h2 class="article-title">
+            <a href="/p/i2c%E9%A9%B1%E5%8A%A8eeprom/">I2C驱动eeprom</a>
+        </h2>
+    
+        
+        <h3 class="article-subtitle">
+            描述
+        </h3>
+        
+    </div>
+
+    
+    
+    
+    
+    <footer class="article-time">
+        
+            <div>
+                <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-calendar-time" width="56" height="56" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <path d="M11.795 21h-6.795a2 2 0 0 1 -2 -2v-12a2 2 0 0 1 2 -2h12a2 2 0 0 1 2 2v4" />
+  <circle cx="18" cy="18" r="4" />
+  <path d="M15 3v4" />
+  <path d="M7 3v4" />
+  <path d="M3 11h16" />
+  <path d="M18 16.496v1.504l1 1" />
+</svg>
+                <time class="article-time--published">2026-05-21</time>
+            </div>
+        
+
+        
+    </footer>
+    
+
+    
+</div>
+
+</header>
+
+    <section class="article-content">
+    
+    
+    <h2 id="heading">
+</h2><h2 id="stm32中使用i2c驱动eeprom读写">STM32中使用I2C驱动EEPROM读写
+</h2><h3 id="背景需求">背景&amp;需求
+</h3><p>产品有一块eeprom存储器件，存放一些基础内容，SN号，location等信息，但是考虑到存储器件不浪费，并且能够利用这些存储内容去存放一些整板维修的记录，在letter-shell的基础上添加命令，进行eeprom的读写。1024字节我写入后面512字节，8条维修记录，一条在64字节内。</p>
+<p>eeprom型号：AT24C08C</p>
+<p>stm32型号：STM32F1003</p>
+<h3 id="手册">手册
+</h3><p>我们这里是AT24C08C为8Kbit，1024字节</p>
+<p><img src="/p/i2c%E9%A9%B1%E5%8A%A8eeprom/assets/image-20260521102323496.png"
+	width="810"
+	height="755"
+	srcset="/p/i2c%E9%A9%B1%E5%8A%A8eeprom/assets/image-20260521102323496_hu3705836649994580606.png 480w, /p/i2c%E9%A9%B1%E5%8A%A8eeprom/assets/image-20260521102323496_hu10418524326669563353.png 1024w"
+	loading="lazy"
+	
+		alt="image-20260521102323496"
+	
+	
+		class="gallery-image" 
+		data-flex-grow="107"
+		data-flex-basis="257px"
+	
+></p>
+<ol>
+<li>设备地址位</li>
+</ol>
+<p><img src="/p/i2c%E9%A9%B1%E5%8A%A8eeprom/assets/image-20260521101958199.png"
+	width="795"
+	height="224"
+	srcset="/p/i2c%E9%A9%B1%E5%8A%A8eeprom/assets/image-20260521101958199_hu5206054327602050864.png 480w, /p/i2c%E9%A9%B1%E5%8A%A8eeprom/assets/image-20260521101958199_hu10755554605576831765.png 1024w"
+	loading="lazy"
+	
+		alt="image-20260521101958199"
+	
+	
+		class="gallery-image" 
+		data-flex-grow="354"
+		data-flex-basis="851px"
+	
+></p>
+<ol start="2">
+<li>写入地址位</li>
+</ol>
+<p><img src="/p/i2c%E9%A9%B1%E5%8A%A8eeprom/assets/image-20260521102222857.png"
+	width="780"
+	height="111"
+	srcset="/p/i2c%E9%A9%B1%E5%8A%A8eeprom/assets/image-20260521102222857_hu7700242852030133198.png 480w, /p/i2c%E9%A9%B1%E5%8A%A8eeprom/assets/image-20260521102222857_hu6002461519829879632.png 1024w"
+	loading="lazy"
+	
+		alt="image-20260521102222857"
+	
+	
+		class="gallery-image" 
+		data-flex-grow="702"
+		data-flex-basis="1686px"
+	
+></p>
+<p>这里的A0~A7是不满足1024字节的地址的，所以要利用设备地址位的其中两位A9和A8。</p>
+<ol start="3">
+<li>
+<p>写操作（Page写入）</p>
+<p><img src="/p/i2c%E9%A9%B1%E5%8A%A8eeprom/assets/image-20260521102659857.png"
+	width="808"
+	height="345"
+	srcset="/p/i2c%E9%A9%B1%E5%8A%A8eeprom/assets/image-20260521102659857_hu14919734802328002448.png 480w, /p/i2c%E9%A9%B1%E5%8A%A8eeprom/assets/image-20260521102659857_hu4597001720085062504.png 1024w"
+	loading="lazy"
+	
+		alt="image-20260521102659857"
+	
+	
+		class="gallery-image" 
+		data-flex-grow="234"
+		data-flex-basis="562px"
+	
+></p>
+<ol start="4">
+<li>读操作</li>
+</ol>
+<p><img src="/p/i2c%E9%A9%B1%E5%8A%A8eeprom/assets/image-20260521102735694.png"
+	width="791"
+	height="367"
+	srcset="/p/i2c%E9%A9%B1%E5%8A%A8eeprom/assets/image-20260521102735694_hu10749700103535934196.png 480w, /p/i2c%E9%A9%B1%E5%8A%A8eeprom/assets/image-20260521102735694_hu2646739383030109325.png 1024w"
+	loading="lazy"
+	
+		alt="image-20260521102735694"
+	
+	
+		class="gallery-image" 
+		data-flex-grow="215"
+		data-flex-basis="517px"
+	
+></p>
+</li>
+</ol>
+<h3 id="过程">过程
+</h3><p>​	eeprom是靠页读写的，16字节一写，512字节分8个记录，一次记录64字节，</p>
+<p>这是软件I2C 不翻页的操作。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl"><span class="n">I2C_StatusTypeDef</span> <span class="nf">I2C_512WriteBytes</span><span class="p">(</span><span class="kt">uint8_t</span> <span class="n">dev_addr</span><span class="p">,</span> <span class="kt">uint16_t</span> <span class="n">reg_addr</span><span class="p">,</span> <span class="kt">uint8_t</span> <span class="o">*</span><span class="n">data</span><span class="p">,</span> <span class="kt">uint16_t</span> <span class="n">len</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="n">I2C_StatusTypeDef</span> <span class="n">status</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="kt">uint16_t</span> <span class="n">i</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">		
+</span></span><span class="line"><span class="cl">		<span class="kt">uint8_t</span> <span class="n">highaddr</span><span class="p">,</span><span class="n">lowaddr</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">		<span class="n">highaddr</span> <span class="o">=</span> <span class="p">(</span><span class="n">reg_addr</span> <span class="o">&gt;&gt;</span> <span class="mi">8</span><span class="p">)</span> <span class="o">&amp;</span> <span class="mh">0xFF</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">		<span class="n">lowaddr</span> <span class="o">=</span> <span class="n">reg_addr</span> <span class="o">&amp;</span> <span class="mh">0xFF</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">	
+</span></span><span class="line"><span class="cl">		<span class="n">dev_addr</span> <span class="o">|=</span> <span class="n">highaddr</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">	
+</span></span><span class="line"><span class="cl">    <span class="nf">I2C_Start</span><span class="p">();</span>
+</span></span><span class="line"><span class="cl">    <span class="nf">I2C_SendByte</span><span class="p">(</span><span class="n">dev_addr</span> <span class="o">&lt;&lt;</span> <span class="mi">1</span><span class="p">);</span>    <span class="c1">// 写地址
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="n">status</span> <span class="o">=</span> <span class="nf">I2C_WaitAck</span><span class="p">();</span>
+</span></span><span class="line"><span class="cl">    <span class="k">if</span><span class="p">(</span><span class="n">status</span> <span class="o">!=</span> <span class="n">I2C_OK</span><span class="p">)</span> <span class="k">goto</span> <span class="n">error</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    
+</span></span><span class="line"><span class="cl">    <span class="nf">I2C_SendByte</span><span class="p">(</span><span class="n">reg_addr</span><span class="p">);</span>         <span class="c1">// 发送寄存器地址
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="n">status</span> <span class="o">=</span> <span class="nf">I2C_WaitAck</span><span class="p">();</span>
+</span></span><span class="line"><span class="cl">    <span class="k">if</span><span class="p">(</span><span class="n">status</span> <span class="o">!=</span> <span class="n">I2C_OK</span><span class="p">)</span> <span class="k">goto</span> <span class="n">error</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    
+</span></span><span class="line"><span class="cl">    <span class="k">for</span><span class="p">(</span><span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">len</span><span class="p">;</span> <span class="n">i</span><span class="o">++</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="nf">I2C_SendByte</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="n">i</span><span class="p">]);</span>      <span class="c1">// 发送数据
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>        <span class="n">status</span> <span class="o">=</span> <span class="nf">I2C_WaitAck</span><span class="p">();</span>
+</span></span><span class="line"><span class="cl">        <span class="k">if</span><span class="p">(</span><span class="n">status</span> <span class="o">!=</span> <span class="n">I2C_OK</span><span class="p">)</span> <span class="k">goto</span> <span class="n">error</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl">    
+</span></span><span class="line"><span class="cl"><span class="nl">error</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">    <span class="nf">I2C_Stop</span><span class="p">();</span>
+</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="n">status</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>翻页操作</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span><span class="lnt">32
+</span><span class="lnt">33
+</span><span class="lnt">34
+</span><span class="lnt">35
+</span><span class="lnt">36
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl"><span class="k">const</span> <span class="kt">void</span> <span class="nf">simple_delay_ms</span><span class="p">(</span><span class="kt">uint32_t</span> <span class="n">ms</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="k">volatile</span> <span class="kt">uint32_t</span> <span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="k">for</span> <span class="p">(</span><span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">ms</span><span class="p">;</span> <span class="n">i</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="k">for</span> <span class="p">(</span><span class="n">j</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">j</span> <span class="o">&lt;</span> <span class="mi">2000</span><span class="p">;</span> <span class="n">j</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>  <span class="c1">// 2000次循环约 0.5~1ms（主频不同请调整）
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>            <span class="nf">__NOP</span><span class="p">();</span>  <span class="c1">// 空操作，防止被优化
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>        <span class="p">}</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">I2C_StatusTypeDef</span> <span class="nf">AT24C08C_Write_CrossPage</span><span class="p">(</span><span class="kt">uint8_t</span> <span class="n">dev_addr</span><span class="p">,</span> <span class="kt">uint16_t</span> <span class="n">mem_addr</span><span class="p">,</span> <span class="kt">uint8_t</span> <span class="o">*</span><span class="n">data</span><span class="p">,</span> <span class="kt">uint16_t</span> <span class="n">len</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="kt">uint16_t</span> <span class="n">offset</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="n">I2C_StatusTypeDef</span> <span class="n">status</span> <span class="o">=</span> <span class="n">I2C_OK</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="k">while</span> <span class="p">(</span><span class="n">len</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="c1">// 计算当前页内的剩余空间
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>        <span class="kt">uint16_t</span> <span class="n">page_remain</span> <span class="o">=</span> <span class="n">AT24C08C_PAGE_SIZE</span> <span class="o">-</span> <span class="p">(</span><span class="n">mem_addr</span> <span class="o">%</span> <span class="n">AT24C08C_PAGE_SIZE</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">        
+</span></span><span class="line"><span class="cl">        <span class="c1">// 本次可以写入的字节数，取“页剩余”和“待写长度”的小值
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>        <span class="kt">uint16_t</span> <span class="n">write_len</span> <span class="o">=</span> <span class="p">(</span><span class="n">len</span> <span class="o">&gt;</span> <span class="n">page_remain</span><span class="p">)</span> <span class="o">?</span> <span class="nl">page_remain</span> <span class="p">:</span> <span class="n">len</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">        <span class="c1">// 调用你的底层I2C页写入函数
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>        <span class="n">status</span> <span class="o">=</span> <span class="nf">I2C_512WriteBytes</span><span class="p">(</span><span class="n">dev_addr</span><span class="p">,</span> <span class="n">mem_addr</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">data</span><span class="p">[</span><span class="n">offset</span><span class="p">],</span> <span class="n">write_len</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">        <span class="k">if</span> <span class="p">(</span><span class="n">status</span> <span class="o">!=</span> <span class="n">I2C_OK</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">            <span class="k">return</span> <span class="n">status</span><span class="p">;</span> <span class="c1">// 写入失败，立即返回错误码
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>        <span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">        <span class="c1">// 等待当前页的内部写周期完成 (AT24C08C写周期最大5ms，此处延时留有余量)
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>        <span class="nf">simple_delay_ms</span><span class="p">(</span><span class="mi">6</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">        
+</span></span><span class="line"><span class="cl">        <span class="c1">// 更新地址、偏移和剩余长度
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>        <span class="n">mem_addr</span> <span class="o">+=</span> <span class="n">write_len</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">        <span class="n">offset</span> <span class="o">+=</span> <span class="n">write_len</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">        <span class="n">len</span> <span class="o">-=</span> <span class="n">write_len</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="n">I2C_OK</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>如何就可以实现翻页操作了。</p>
+<p>letter-shell函数</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">  1
+</span><span class="lnt">  2
+</span><span class="lnt">  3
+</span><span class="lnt">  4
+</span><span class="lnt">  5
+</span><span class="lnt">  6
+</span><span class="lnt">  7
+</span><span class="lnt">  8
+</span><span class="lnt">  9
+</span><span class="lnt"> 10
+</span><span class="lnt"> 11
+</span><span class="lnt"> 12
+</span><span class="lnt"> 13
+</span><span class="lnt"> 14
+</span><span class="lnt"> 15
+</span><span class="lnt"> 16
+</span><span class="lnt"> 17
+</span><span class="lnt"> 18
+</span><span class="lnt"> 19
+</span><span class="lnt"> 20
+</span><span class="lnt"> 21
+</span><span class="lnt"> 22
+</span><span class="lnt"> 23
+</span><span class="lnt"> 24
+</span><span class="lnt"> 25
+</span><span class="lnt"> 26
+</span><span class="lnt"> 27
+</span><span class="lnt"> 28
+</span><span class="lnt"> 29
+</span><span class="lnt"> 30
+</span><span class="lnt"> 31
+</span><span class="lnt"> 32
+</span><span class="lnt"> 33
+</span><span class="lnt"> 34
+</span><span class="lnt"> 35
+</span><span class="lnt"> 36
+</span><span class="lnt"> 37
+</span><span class="lnt"> 38
+</span><span class="lnt"> 39
+</span><span class="lnt"> 40
+</span><span class="lnt"> 41
+</span><span class="lnt"> 42
+</span><span class="lnt"> 43
+</span><span class="lnt"> 44
+</span><span class="lnt"> 45
+</span><span class="lnt"> 46
+</span><span class="lnt"> 47
+</span><span class="lnt"> 48
+</span><span class="lnt"> 49
+</span><span class="lnt"> 50
+</span><span class="lnt"> 51
+</span><span class="lnt"> 52
+</span><span class="lnt"> 53
+</span><span class="lnt"> 54
+</span><span class="lnt"> 55
+</span><span class="lnt"> 56
+</span><span class="lnt"> 57
+</span><span class="lnt"> 58
+</span><span class="lnt"> 59
+</span><span class="lnt"> 60
+</span><span class="lnt"> 61
+</span><span class="lnt"> 62
+</span><span class="lnt"> 63
+</span><span class="lnt"> 64
+</span><span class="lnt"> 65
+</span><span class="lnt"> 66
+</span><span class="lnt"> 67
+</span><span class="lnt"> 68
+</span><span class="lnt"> 69
+</span><span class="lnt"> 70
+</span><span class="lnt"> 71
+</span><span class="lnt"> 72
+</span><span class="lnt"> 73
+</span><span class="lnt"> 74
+</span><span class="lnt"> 75
+</span><span class="lnt"> 76
+</span><span class="lnt"> 77
+</span><span class="lnt"> 78
+</span><span class="lnt"> 79
+</span><span class="lnt"> 80
+</span><span class="lnt"> 81
+</span><span class="lnt"> 82
+</span><span class="lnt"> 83
+</span><span class="lnt"> 84
+</span><span class="lnt"> 85
+</span><span class="lnt"> 86
+</span><span class="lnt"> 87
+</span><span class="lnt"> 88
+</span><span class="lnt"> 89
+</span><span class="lnt"> 90
+</span><span class="lnt"> 91
+</span><span class="lnt"> 92
+</span><span class="lnt"> 93
+</span><span class="lnt"> 94
+</span><span class="lnt"> 95
+</span><span class="lnt"> 96
+</span><span class="lnt"> 97
+</span><span class="lnt"> 98
+</span><span class="lnt"> 99
+</span><span class="lnt">100
+</span><span class="lnt">101
+</span><span class="lnt">102
+</span><span class="lnt">103
+</span><span class="lnt">104
+</span><span class="lnt">105
+</span><span class="lnt">106
+</span><span class="lnt">107
+</span><span class="lnt">108
+</span><span class="lnt">109
+</span><span class="lnt">110
+</span><span class="lnt">111
+</span><span class="lnt">112
+</span><span class="lnt">113
+</span><span class="lnt">114
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl"><span class="k">static</span> <span class="kt">uint16_t</span> <span class="nf">Repair_Address</span><span class="p">(</span><span class="kt">uint16_t</span> <span class="n">Base</span> <span class="p">,</span> <span class="kt">uint16_t</span> <span class="n">Index</span><span class="p">){</span>
+</span></span><span class="line"><span class="cl">	<span class="k">return</span> <span class="p">(</span><span class="n">Base</span><span class="o">+</span><span class="n">Repair_size</span><span class="o">*</span><span class="n">Index</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kt">int</span> <span class="nf">shellRepair</span><span class="p">(</span><span class="kt">int</span> <span class="n">argc</span><span class="p">,</span> <span class="kt">char</span> <span class="o">*</span><span class="n">argv</span><span class="p">[])</span>
+</span></span><span class="line"><span class="cl"><span class="p">{</span>
+</span></span><span class="line"><span class="cl">	<span class="kt">char</span> <span class="n">readbuff</span><span class="p">[</span><span class="n">Repair_size</span><span class="p">];</span>     <span class="c1">// 必须数组！必须初始化！
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>
+</span></span><span class="line"><span class="cl">	<span class="kt">char</span> <span class="n">initbuff</span><span class="p">[</span><span class="n">Repair_size</span><span class="p">];</span>
+</span></span><span class="line"><span class="cl">	<span class="nf">memset</span><span class="p">(</span><span class="n">initbuff</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">Repair_size</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">	<span class="nf">memcpy</span><span class="p">(</span><span class="n">initbuff</span><span class="p">,</span> <span class="s">&#34;</span><span class="se">\r\n</span><span class="s">&#34;</span><span class="p">,</span> <span class="mi">3</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">	
+</span></span><span class="line"><span class="cl">	<span class="kt">char</span> <span class="n">write_buff</span><span class="p">[</span><span class="n">Repair_size</span><span class="p">];</span>
+</span></span><span class="line"><span class="cl">	<span class="nf">memset</span><span class="p">(</span><span class="n">write_buff</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">Repair_size</span><span class="p">);</span>                     <span class="c1">// 全零填充
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>	<span class="n">write_buff</span><span class="p">[</span><span class="n">Repair_size</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="sc">&#39;\0&#39;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">	
+</span></span><span class="line"><span class="cl">	
+</span></span><span class="line"><span class="cl">	<span class="nf">I2C_Init</span><span class="p">(</span><span class="n">GPIOB</span><span class="p">,</span> <span class="n">GPIO_PIN_7</span><span class="p">,</span> <span class="n">GPIOB</span><span class="p">,</span> <span class="n">GPIO_PIN_6</span><span class="p">,</span> <span class="mi">0</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">	<span class="nf">I2C_Switch</span><span class="p">(</span><span class="mi">0</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">	
+</span></span><span class="line"><span class="cl">	<span class="n">Shell</span> <span class="o">*</span><span class="n">shell</span> <span class="o">=</span> <span class="nf">shellGetCurrent</span><span class="p">();</span>
+</span></span><span class="line"><span class="cl">    <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="n">shell</span><span class="p">)</span> <span class="k">return</span> <span class="o">-</span><span class="mi">1</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">		
+</span></span><span class="line"><span class="cl"><span class="c1">//	    // 调试：打印参数个数
+</span></span></span><span class="line"><span class="cl"><span class="c1">//    shellPrint(shell, &#34;argc=%d\n&#34;, argc);
+</span></span></span><span class="line"><span class="cl"><span class="c1">//    for (int i = 0; i &lt; argc; i++) {
+</span></span></span><span class="line"><span class="cl"><span class="c1">//        shellPrint(shell, &#34;argv[%d]=%s\n&#34;, i, argv[i]);
+</span></span></span><span class="line"><span class="cl"><span class="c1">//    }
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>	
+</span></span><span class="line"><span class="cl">    <span class="c1">// 没有参数：显示所有有效记录
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="k">if</span> <span class="p">(</span><span class="n">argc</span> <span class="o">==</span> <span class="mi">1</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="nf">shellPrint</span><span class="p">(</span><span class="n">shell</span><span class="p">,</span> <span class="s">&#34;--- Repair Records ---</span><span class="se">\r\n</span><span class="s">&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">        <span class="k">for</span> <span class="p">(</span><span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">Repair_NUM</span><span class="p">;</span> <span class="n">i</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">						<span class="c1">//memset(readbuff,0,Repair_size);
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>						<span class="nf">I2C_512ReadBytes</span><span class="p">(</span><span class="n">device_addr</span><span class="p">,</span> <span class="nf">Repair_addr</span><span class="p">(</span><span class="n">i</span><span class="p">),(</span><span class="kt">uint8_t</span> <span class="o">*</span><span class="p">)</span><span class="n">readbuff</span><span class="p">,</span><span class="n">Repair_size</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">            <span class="nf">printf</span><span class="p">(</span><span class="s">&#34;[%d]: %s</span><span class="se">\r\n</span><span class="s">&#34;</span><span class="p">,</span> <span class="n">i</span><span class="p">,</span> <span class="n">readbuff</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">						<span class="c1">//memset(readbuff,0,Repair_size);
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>        <span class="p">}</span>
+</span></span><span class="line"><span class="cl">        <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="c1">// 参数1：索引 或 &#34;clear&#34;
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="k">if</span> <span class="p">(</span><span class="nf">strcmp</span><span class="p">(</span><span class="n">argv</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="s">&#34;clear&#34;</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="c1">// 清除操作
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>        <span class="k">if</span> <span class="p">(</span><span class="n">argc</span> <span class="o">&lt;</span> <span class="mi">3</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">            <span class="nf">shellPrint</span><span class="p">(</span><span class="n">shell</span><span class="p">,</span> <span class="s">&#34;Usage: repair clear &lt;index|all&gt;</span><span class="se">\r\n</span><span class="s">&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">            <span class="k">return</span> <span class="o">-</span><span class="mi">1</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">        <span class="p">}</span>
+</span></span><span class="line"><span class="cl">        <span class="k">if</span> <span class="p">(</span><span class="nf">strcmp</span><span class="p">(</span><span class="n">argv</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span> <span class="s">&#34;all&#34;</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">            <span class="k">for</span> <span class="p">(</span><span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">Repair_NUM</span><span class="p">;</span> <span class="n">i</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">							<span class="nf">AT24C08C_Write_CrossPage</span><span class="p">(</span><span class="n">device_addr</span><span class="p">,</span> <span class="nf">Repair_addr</span><span class="p">(</span><span class="n">i</span><span class="p">),(</span><span class="kt">uint8_t</span> <span class="o">*</span><span class="p">)</span><span class="n">initbuff</span><span class="p">,</span><span class="n">Repair_size</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">							<span class="nf">printf</span><span class="p">(</span><span class="s">&#34;[%d]: %s</span><span class="se">\r\n</span><span class="s">&#34;</span><span class="p">,</span> <span class="n">i</span><span class="p">,</span> <span class="n">initbuff</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">							<span class="c1">//memset(readbuff,0,Repair_size);
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>        <span class="p">}</span>
+</span></span><span class="line"><span class="cl">            <span class="nf">shellPrint</span><span class="p">(</span><span class="n">shell</span><span class="p">,</span> <span class="s">&#34;All records cleared.</span><span class="se">\r\n</span><span class="s">&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">            <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">        <span class="p">}</span>
+</span></span><span class="line"><span class="cl">        <span class="kt">int</span> <span class="n">idx</span> <span class="o">=</span> <span class="nf">my_atoi</span><span class="p">(</span><span class="n">argv</span><span class="p">[</span><span class="mi">2</span><span class="p">]);</span>
+</span></span><span class="line"><span class="cl">        <span class="k">if</span> <span class="p">(</span><span class="n">idx</span> <span class="o">&lt;</span> <span class="mi">0</span> <span class="o">||</span> <span class="n">idx</span> <span class="o">&gt;=</span> <span class="n">MAX_RECORDS</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">            <span class="nf">shellPrint</span><span class="p">(</span><span class="n">shell</span><span class="p">,</span> <span class="s">&#34;Index out of range (0~%d)</span><span class="se">\r\n</span><span class="s">&#34;</span><span class="p">,</span> <span class="n">MAX_RECORDS</span> <span class="o">-</span> <span class="mi">1</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">            <span class="k">return</span> <span class="o">-</span><span class="mi">1</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">        <span class="p">}</span>
+</span></span><span class="line"><span class="cl">				<span class="nf">AT24C08C_Write_CrossPage</span><span class="p">(</span><span class="n">device_addr</span><span class="p">,</span> <span class="nf">Repair_addr</span><span class="p">(</span><span class="n">idx</span><span class="p">),(</span><span class="kt">uint8_t</span> <span class="o">*</span><span class="p">)</span><span class="n">initbuff</span><span class="p">,</span><span class="n">Repair_size</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">				<span class="c1">//shellPrint(shell, &#34;[%d]: %s\r\n&#34;, idx, initbuff);
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>				
+</span></span><span class="line"><span class="cl">        <span class="nf">shellPrint</span><span class="p">(</span><span class="n">shell</span><span class="p">,</span> <span class="s">&#34;Record[%d] cleared.</span><span class="se">\r\n</span><span class="s">&#34;</span><span class="p">,</span> <span class="n">idx</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">        <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="c1">// 解析索引
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="kt">int</span> <span class="n">idx</span> <span class="o">=</span> <span class="nf">my_atoi</span><span class="p">(</span><span class="n">argv</span><span class="p">[</span><span class="mi">1</span><span class="p">]);</span>
+</span></span><span class="line"><span class="cl">    <span class="k">if</span> <span class="p">(</span><span class="n">idx</span> <span class="o">&lt;</span> <span class="mi">0</span> <span class="o">||</span> <span class="n">idx</span> <span class="o">&gt;=</span> <span class="n">MAX_RECORDS</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="nf">shellPrint</span><span class="p">(</span><span class="n">shell</span><span class="p">,</span> <span class="s">&#34;Index out of range (0~%d)</span><span class="se">\r\n</span><span class="s">&#34;</span><span class="p">,</span> <span class="n">MAX_RECORDS</span> <span class="o">-</span> <span class="mi">1</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">        <span class="k">return</span> <span class="o">-</span><span class="mi">1</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="c1">// 只有索引：查看该条记录
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="k">if</span> <span class="p">(</span><span class="n">argc</span> <span class="o">==</span> <span class="mi">2</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl"><span class="c1">//        if (records[idx][0] == &#39;\0&#39;) {
+</span></span></span><span class="line"><span class="cl"><span class="c1">//            shellPrint(shell, &#34;Record[%d] is empty.\r\n&#34;, idx);
+</span></span></span><span class="line"><span class="cl"><span class="c1">//        } else 
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>				<span class="p">{</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">					<span class="nf">I2C_512ReadBytes</span><span class="p">(</span><span class="n">device_addr</span><span class="p">,</span> <span class="nf">Repair_addr</span><span class="p">(</span><span class="n">idx</span><span class="p">),(</span><span class="kt">uint8_t</span> <span class="o">*</span><span class="p">)</span><span class="n">readbuff</span><span class="p">,</span><span class="n">Repair_size</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">          <span class="nf">shellPrint</span><span class="p">(</span><span class="n">shell</span><span class="p">,</span> <span class="s">&#34;[%d]: %s</span><span class="se">\r\n</span><span class="s">&#34;</span><span class="p">,</span> <span class="n">idx</span><span class="p">,</span> <span class="n">readbuff</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">					<span class="c1">//memset(readbuff,0,Repair_size);
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>        <span class="p">}</span>
+</span></span><span class="line"><span class="cl">        <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="c1">// 有索引和字符串：写入记录
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="c1">// 拼接剩余所有参数（支持带空格的字符串）
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="kt">char</span> <span class="n">record_str</span><span class="p">[</span><span class="n">RECORD_SIZE</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="mi">0</span><span class="p">};</span>
+</span></span><span class="line"><span class="cl">    <span class="k">for</span> <span class="p">(</span><span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">2</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">argc</span><span class="p">;</span> <span class="n">i</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="k">if</span> <span class="p">(</span><span class="n">i</span> <span class="o">&gt;</span> <span class="mi">2</span><span class="p">)</span> <span class="nf">strncat</span><span class="p">(</span><span class="n">record_str</span><span class="p">,</span> <span class="s">&#34; &#34;</span><span class="p">,</span> <span class="n">RECORD_SIZE</span> <span class="o">-</span> <span class="nf">strlen</span><span class="p">(</span><span class="n">record_str</span><span class="p">));</span>
+</span></span><span class="line"><span class="cl">        <span class="nf">strncat</span><span class="p">(</span><span class="n">record_str</span><span class="p">,</span> <span class="n">argv</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">RECORD_SIZE</span> <span class="o">-</span> <span class="nf">strlen</span><span class="p">(</span><span class="n">record_str</span><span class="p">));</span>
+</span></span><span class="line"><span class="cl">        <span class="k">if</span> <span class="p">(</span><span class="nf">strlen</span><span class="p">(</span><span class="n">record_str</span><span class="p">)</span> <span class="o">&gt;=</span> <span class="n">RECORD_SIZE</span><span class="p">)</span> <span class="k">break</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl">    <span class="k">if</span> <span class="p">(</span><span class="nf">strlen</span><span class="p">(</span><span class="n">record_str</span><span class="p">)</span> <span class="o">&gt;</span> <span class="n">RECORD_SIZE</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="nf">shellPrint</span><span class="p">(</span><span class="n">shell</span><span class="p">,</span> <span class="s">&#34;Record too long (max %d chars)</span><span class="se">\r\n</span><span class="s">&#34;</span><span class="p">,</span> <span class="n">RECORD_SIZE</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">        <span class="k">return</span> <span class="o">-</span><span class="mi">1</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl">    <span class="nf">strcpy</span><span class="p">(</span><span class="n">records</span><span class="p">[</span><span class="n">idx</span><span class="p">],</span> <span class="n">record_str</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="n">record_valid</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span><span class="p">;</span>	
+</span></span><span class="line"><span class="cl">		<span class="c1">//strncpy(write_buff, record_str, Repair_size - 1);       // 安全拷贝，留一个字节放&#39;\0&#39;
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>		<span class="nf">AT24C08C_Write_CrossPage</span><span class="p">(</span><span class="n">device_addr</span><span class="p">,</span> <span class="nf">Repair_addr</span><span class="p">(</span><span class="n">idx</span><span class="p">),(</span><span class="kt">uint8_t</span> <span class="o">*</span><span class="p">)</span><span class="n">record_str</span><span class="p">,</span><span class="n">Repair_size</span><span class="p">);</span> 
+</span></span><span class="line"><span class="cl">    <span class="nf">shellPrint</span><span class="p">(</span><span class="n">shell</span><span class="p">,</span> <span class="s">&#34;Record[%d] saved.</span><span class="se">\r\n</span><span class="s">&#34;</span><span class="p">,</span> <span class="n">idx</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="nf">SHELL_EXPORT_CMD</span><span class="p">(</span>
+</span></span><span class="line"><span class="cl"><span class="nf">SHELL_CMD_PERMISSION</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span><span class="o">|</span><span class="n">SHELL_CMD_DISABLE_RETURN</span><span class="p">,</span> 
+</span></span><span class="line"><span class="cl"><span class="n">repair</span><span class="p">,</span> <span class="n">shellRepair</span><span class="p">,</span> <span class="s">&#34;维修记录&#34;</span><span class="p">);</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><h3 id="问题">问题
+</h3><p>1、部分I2C驱动由另外一名开发者进行开发，由于开发者写了两个驱动，一个软件I2C的驱动，另外一个HAL库的硬件I2C进行驱动，两个一起使用，发现读写有问题，后来发现两者的硬件I2C和软件I2C的GPIO驱动电平，是有不一样的，后面我摒弃了硬件I2C，使用软件I2C。</p>
+<p>2、又犯了在回调函数中不能使用hal_delay这种操作，因为simple_delay_ms(6);这里读写是有周期的，不然写不进行后面的内容。</p>
+<p><img src="/p/i2c%E9%A9%B1%E5%8A%A8eeprom/assets/image-20260528201300218.png"
+	width="471"
+	height="272"
+	srcset="/p/i2c%E9%A9%B1%E5%8A%A8eeprom/assets/image-20260528201300218_hu4868884590450673286.png 480w, /p/i2c%E9%A9%B1%E5%8A%A8eeprom/assets/image-20260528201300218_hu1323349974433007256.png 1024w"
+	loading="lazy"
+	
+		alt="image-20260528201300218"
+	
+	
+		class="gallery-image" 
+		data-flex-grow="173"
+		data-flex-basis="415px"
+	
+></p>
+<p>基本效果就是这样的</p>
+<p><img src="/p/i2c%E9%A9%B1%E5%8A%A8eeprom/assets/image-20260528201319394.png"
+	width="367"
+	height="65"
+	srcset="/p/i2c%E9%A9%B1%E5%8A%A8eeprom/assets/image-20260528201319394_hu1682175513968062535.png 480w, /p/i2c%E9%A9%B1%E5%8A%A8eeprom/assets/image-20260528201319394_hu2118931980031013889.png 1024w"
+	loading="lazy"
+	
+		alt="image-20260528201319394"
+	
+	
+		class="gallery-image" 
+		data-flex-grow="564"
+		data-flex-basis="1355px"
+	
+></p>
+
+</section>
+
+
+    <footer class="article-footer">
+    
+
+    </footer>
+
+
+    
+</article>
+
+    
+
+    
+
+<aside class="related-content--wrapper">
+    <h2 class="section-title">相关文章</h2>
+    <div class="related-content">
+        <div class="flex article-list--tile">
+            
+                
+<article class="has-image">
+    <a href="/p/stm32ota%E5%8D%87%E7%BA%A7%E7%AD%96%E7%95%A5%E4%B8%8E%E5%AE%9E%E7%8E%B0/">
+        
+        
+            <div class="article-image">
+                <img src="/p/stm32ota%E5%8D%87%E7%BA%A7%E7%AD%96%E7%95%A5%E4%B8%8E%E5%AE%9E%E7%8E%B0/OTA.e432a5f3eaf11df18d630f805876b7bd_hu3791873794463298333.jpg" 
+                        width="250" 
+                        height="150" 
+                        loading="lazy"
+                        alt="Featured image of post STM32OTA升级策略与实现"
+                        
+                        data-hash="md5-5DKl8&#43;rxHfGNYw&#43;AWHa3vQ==">
+                
+            </div>
+        
+
+        <div class="article-details">
+            <h2 class="article-title">STM32OTA升级策略与实现</h2>
+        </div>
+    </a>
+</article>
+
+            
+                
+<article class="has-image">
+    <a href="/p/stm32%E7%A7%BB%E6%A4%8Dletter-shell/">
+        
+        
+            <div class="article-image">
+                <img src="/p/stm32%E7%A7%BB%E6%A4%8Dletter-shell/letter-shell.18349edb22f70853d3c68ed1f59c1cc5_hu11864763699184886245.jpg" 
+                        width="250" 
+                        height="150" 
+                        loading="lazy"
+                        alt="Featured image of post STM32移植letter-shell"
+                        
+                        data-hash="md5-GDSe2yL3CFPTxo7R9ZwcxQ==">
+                
+            </div>
+        
+
+        <div class="article-details">
+            <h2 class="article-title">STM32移植letter-shell</h2>
+        </div>
+    </a>
+</article>
+
+            
+        </div>
+    </div>
+</aside>
+
+     
+    
+        
+    
+
+    <footer class="site-footer">
+    <section class="copyright">
+        &copy; 
+        
+            2024 - 
+        
+        2026 shi1iu
+    </section>
+    
+    <section class="powerby">
+        使用 <a href="https://gohugo.io/" target="_blank" rel="noopener">Hugo</a> 构建 <br />
+        主题 <b><a href="https://github.com/CaiJimmy/hugo-theme-stack" target="_blank" rel="noopener" data-version="3.26.0">Stack</a></b> 由 <a href="https://jimmycai.com" target="_blank" rel="noopener">Jimmy</a> 设计
+    </section>
+</footer>
+
+
+    
+<div class="pswp" tabindex="-1" role="dialog" aria-hidden="true">
+
+    
+    <div class="pswp__bg"></div>
+
+    
+    <div class="pswp__scroll-wrap">
+
+        
+        <div class="pswp__container">
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+        </div>
+
+        
+        <div class="pswp__ui pswp__ui--hidden">
+
+            <div class="pswp__top-bar">
+
+                
+
+                <div class="pswp__counter"></div>
+
+                <button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+
+                <button class="pswp__button pswp__button--share" title="Share"></button>
+
+                <button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+
+                <button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
+
+                
+                
+                <div class="pswp__preloader">
+                    <div class="pswp__preloader__icn">
+                        <div class="pswp__preloader__cut">
+                            <div class="pswp__preloader__donut"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
+                <div class="pswp__share-tooltip"></div>
+            </div>
+
+            <button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+            </button>
+
+            <button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)">
+            </button>
+
+            <div class="pswp__caption">
+                <div class="pswp__caption__center"></div>
+            </div>
+
+        </div>
+
+    </div>
+
+</div><script 
+                src="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.js"integrity="sha256-ePwmChbbvXbsO02lbM3HoHbSHTHFAeChekF1xKJdleo="crossorigin="anonymous"
+                defer
+                >
+            </script><script 
+                src="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe-ui-default.min.js"integrity="sha256-UKkzOn/w1mBxRmLLGrSeyB4e1xbrp4xylgAWb3M42pU="crossorigin="anonymous"
+                defer
+                >
+            </script><link 
+                rel="stylesheet" 
+                href="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/default-skin/default-skin.min.css"crossorigin="anonymous"
+            ><link 
+                rel="stylesheet" 
+                href="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.css"crossorigin="anonymous"
+            >
+
+            </main>
+        </div>
+        <script 
+                src="https://cdn.jsdelivr.net/npm/node-vibrant@3.1.6/dist/vibrant.min.js"integrity="sha256-awcR2jno4kI5X0zL8ex0vi2z&#43;KMkF24hUW8WePSA9HM="crossorigin="anonymous"
+                
+                >
+            </script><script type="text/javascript" src="/ts/main.js" defer></script>
+<script>
+    (function () {
+        const customFont = document.createElement('link');
+        customFont.href = "https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700&display=swap";
+
+        customFont.type = "text/css";
+        customFont.rel = "stylesheet";
+
+        document.head.appendChild(customFont);
+    }());
+</script>
+
+    </body>
+</html>
